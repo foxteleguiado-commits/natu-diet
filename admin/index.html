@@ -63,6 +63,21 @@
 
   .hint{ font-size:12px; color:#8a9aa0; margin-top:6px; }
 
+  .stats-row{ display:flex; gap:14px; margin-bottom:18px; flex-wrap:wrap; }
+  .stat-card{ flex:1; min-width:150px; background:#fff; border:1px solid #d7e6ea; border-radius:12px; padding:16px 18px; }
+  .stat-card .num{ font-size:28px; font-weight:800; color:#1596c9; }
+  .stat-card .lbl{ font-size:12px; font-weight:700; color:#7c8f95; text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
+  button.refresh{
+    background:#fff; border:1px solid #cfe0e5; color:#163542; font-weight:700; font-size:13px;
+    padding:8px 16px; border-radius:8px; cursor:pointer; margin-bottom:14px;
+  }
+  .logs-table-wrap{ overflow-x:auto; border:1px solid #d7e6ea; border-radius:12px; background:#fff; }
+  table.logs-table{ width:100%; border-collapse:collapse; font-size:12.5px; white-space:nowrap; }
+  table.logs-table th{ text-align:left; padding:10px 12px; background:#f0f8fa; color:#55707a; font-size:11px; text-transform:uppercase; letter-spacing:.03em; position:sticky; top:0; }
+  table.logs-table td{ padding:9px 12px; border-top:1px solid #eef4f6; color:#163542; }
+  table.logs-table tr:hover td{ background:#f7fbfc; }
+  .logs-empty{ padding:24px; text-align:center; color:#8a9aa0; font-size:13px; }
+
   .save-bar{
     position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #d7e6ea;
     padding:12px 20px; display:flex; gap:12px; align-items:center; justify-content:flex-end; z-index:20;
@@ -108,6 +123,7 @@
 
 <script>
   var CATEGORIES = [
+    { id: 'visitas', label: 'Visitas' },
     { id: 'marca', label: 'Marca e contato' },
     { id: 'cores', label: 'Cores' },
     { id: 'hero', label: 'Topo do site' },
@@ -136,6 +152,17 @@
   }
 
   var CAT_HTML = {
+    visitas:
+      '<h2>Visitas</h2><p class="desc">Quem acessou o site: total, IPs únicos, navegador e dispositivo.</p>' +
+      '<button class="refresh" id="refreshLogs">Atualizar</button>' +
+      '<div class="stats-row">' +
+        '<div class="stat-card"><div class="num" id="statTotal">—</div><div class="lbl">Acessos totais</div></div>' +
+        '<div class="stat-card"><div class="num" id="statUnique">—</div><div class="lbl">IPs únicos</div></div>' +
+      '</div>' +
+      '<div class="logs-table-wrap"><table class="logs-table"><thead><tr>' +
+        '<th>Quando</th><th>IP</th><th>Navegador</th><th>Sistema</th><th>Dispositivo</th><th>Página</th>' +
+      '</tr></thead><tbody id="logsBody"><tr><td colspan="6" class="logs-empty">Digite a senha e clique em Atualizar.</td></tr></tbody></table></div>',
+
     marca:
       '<h2>Marca e contato</h2><p class="desc">Nome exibido no site e os números/mensagens do WhatsApp.</p>' +
       '<div class="card"><strong class="card-title">Identidade</strong>' +
@@ -249,7 +276,56 @@
     document.querySelectorAll('nav.sidebar button').forEach(function(b){ b.classList.toggle('active', b.dataset.cat === id); });
     document.querySelectorAll('main .cat').forEach(function(s){ s.classList.toggle('active', s.id === 'cat-' + id); });
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    if (id === 'visitas' && document.getElementById('token').value) loadLogs();
   }
+
+  function fmtDate(ts){
+    var d = new Date(ts);
+    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function loadLogs(){
+    var token = document.getElementById('token').value;
+    var body = document.getElementById('logsBody');
+    if (!token){
+      document.getElementById('msg').textContent = 'Digite a senha primeiro.';
+      document.getElementById('msg').className = 'msg err';
+      return;
+    }
+    body.innerHTML = '<tr><td colspan="6" class="logs-empty">Carregando…</td></tr>';
+    fetch('../api/logs?token=' + encodeURIComponent(token))
+      .then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+      .then(function(res){
+        if (!res.ok){
+          body.innerHTML = '<tr><td colspan="6" class="logs-empty">Erro: ' + escapeHtml(res.body.error || 'falha ao carregar') + '</td></tr>';
+          return;
+        }
+        document.getElementById('statTotal').textContent = res.body.total;
+        document.getElementById('statUnique').textContent = res.body.uniqueIps;
+        var entries = res.body.entries || [];
+        if (!entries.length){
+          body.innerHTML = '<tr><td colspan="6" class="logs-empty">Nenhum acesso registrado ainda.</td></tr>';
+          return;
+        }
+        body.innerHTML = entries.map(function(e){
+          return '<tr><td>' + fmtDate(e.t) + '</td><td>' + escapeHtml(e.ip) + '</td><td>' + escapeHtml(e.browser) +
+            '</td><td>' + escapeHtml(e.os) + '</td><td>' + escapeHtml(e.device) + '</td><td>' + escapeHtml(e.path) + '</td></tr>';
+        }).join('');
+      })
+      .catch(function(err){
+        body.innerHTML = '<tr><td colspan="6" class="logs-empty">Erro de rede: ' + escapeHtml(err) + '</td></tr>';
+      });
+  }
+
+  main.addEventListener('click', function(ev){
+    if (ev.target && ev.target.id === 'refreshLogs') loadLogs();
+  });
 
   function pathGet(obj, path){
     return path.split('.').reduce(function(o,k){ return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
