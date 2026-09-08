@@ -18,6 +18,7 @@
     --brand-blue-soft: #59bde3;
     --brand-red: #c2453a;
     --brand-green: #5a9c4c;
+    --hero-em-color: #7dd3fc;
     --wa: #25d366;
     --wa-dark: #1da851;
     --shadow: 0 18px 40px -20px rgba(22,53,66,.28);
@@ -103,7 +104,7 @@
     padding:56px 24px 64px; max-width:1120px; margin:0 auto;
   }
   .hero h1{ font-size:clamp(32px,4.4vw,50px); font-weight:900; letter-spacing:-.01em; margin-top:14px; }
-  .hero h1 em{ font-style:italic; color:#7dd3fc; }
+  .hero h1 em{ font-style:italic; color:var(--hero-em-color); }
   .hero p.lede{ margin-top:18px; font-size:17px; line-height:1.6; color:var(--ink-soft); max-width:46ch; }
   .hero-ctas{ display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; }
   .hero-ctas .btn-wa{ padding:14px 24px; font-size:15px; }
@@ -250,10 +251,10 @@
 <header>
   <div class="header-inner">
     <div class="wordmark">
-      <span class="name">Natu Diet</span>
-      <span class="tag">Composto · Multi Ervas</span>
+      <span class="name" data-ck="brand.name">Natu Diet</span>
+      <span class="tag" data-ck="brand.tag">Composto · Multi Ervas</span>
     </div>
-    <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener">
+    <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener" data-wa="hero">
       <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg>
       <span class="full">Falar no WhatsApp</span>
       <span class="short">WhatsApp</span>
@@ -264,16 +265,16 @@
 <section class="hero">
   <div class="hero-inner">
     <div>
-      <span class="label-eyebrow">Produto fitoterápico · Frascos de 30 ou 60 cápsulas · Multi ervas</span>
-      <h1>Simplifique o seu emagrecimento em <em>1 cápsula</em> por dia.</h1>
-      <p class="lede">Composto natural multi ervas que age todos os dias na sua rotina: controla o apetite, acelera o metabolismo e reduz a retenção de líquidos — em um único horário fixo, ao lado de uma alimentação equilibrada.</p>
+      <span class="label-eyebrow" data-ck="hero.eyebrow">Produto fitoterápico · Frascos de 30 ou 60 cápsulas · Multi ervas</span>
+      <h1><span data-ck="hero.titleBefore">Simplifique o seu emagrecimento em</span> <em data-ck="hero.titleEm">1 cápsula</em> <span data-ck="hero.titleAfter">por dia.</span></h1>
+      <p class="lede" data-ck="hero.lede">Composto natural multi ervas que age todos os dias na sua rotina: controla o apetite, acelera o metabolismo e reduz a retenção de líquidos — em um único horário fixo, ao lado de uma alimentação equilibrada.</p>
       <div class="hero-ctas">
-        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> Pedir pelo WhatsApp</a>
-        <a class="btn-wa ghost" href="#precos">Ver preços</a>
+        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener" data-wa="hero"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> <span data-ck="hero.ctaPrimary">Pedir pelo WhatsApp</span></a>
+        <a class="btn-wa ghost" href="#precos"><span data-ck="hero.ctaSecondary">Ver preços</span></a>
       </div>
       <div class="hero-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="10.5" width="14" height="9" rx="2"/><path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7"/></svg>
-        Frasco lacrado com selo holográfico de autenticidade Multi Ervas.
+        <span data-ck="hero.note">Frasco lacrado com selo holográfico de autenticidade Multi Ervas.</span>
       </div>
     </div>
     <div class="hero-art">
@@ -290,24 +291,24 @@
 <section class="ficha">
   <div class="ficha-inner">
     <div class="ficha-head">
-      <h2>Sugestão de uso</h2>
+      <h2 data-ck="ficha.heading">Sugestão de uso</h2>
       <span class="label-eyebrow">ficha do frasco</span>
     </div>
     <div class="ficha-grid">
       <div class="ficha-col">
-        <div class="k">Cápsulas / dia</div>
-        <div class="v mono">1 cápsula</div>
-        <div class="d">1 cápsula por dia, sempre no mesmo horário — de preferência após o café da manhã.</div>
+        <div class="k" data-ck="ficha.cap.k">Cápsulas / dia</div>
+        <div class="v mono" data-ck="ficha.cap.v">1 cápsula</div>
+        <div class="d" data-ck="ficha.cap.d">1 cápsula por dia, sempre no mesmo horário — de preferência após o café da manhã.</div>
       </div>
       <div class="ficha-col">
-        <div class="k">Alimentação</div>
-        <div class="v mono">3 em 3h</div>
-        <div class="d">Refeições leves e regulares ao longo do dia, mesmo sem fome.</div>
+        <div class="k" data-ck="ficha.food.k">Alimentação</div>
+        <div class="v mono" data-ck="ficha.food.v">3 em 3h</div>
+        <div class="d" data-ck="ficha.food.d">Refeições leves e regulares ao longo do dia, mesmo sem fome.</div>
       </div>
       <div class="ficha-col">
-        <div class="k">Água</div>
-        <div class="v mono">≥ 3 L / dia</div>
-        <div class="d">Hidratação mínima recomendada durante o uso do composto.</div>
+        <div class="k" data-ck="ficha.water.k">Água</div>
+        <div class="v mono" data-ck="ficha.water.v">≥ 3 L / dia</div>
+        <div class="d" data-ck="ficha.water.d">Hidratação mínima recomendada durante o uso do composto.</div>
       </div>
     </div>
   </div>
@@ -315,29 +316,29 @@
 
 <section class="pad" id="beneficios">
   <div class="wrap">
-    <h2 class="sec-title">O que você sente com 1 cápsula por dia</h2>
-    <p class="sec-sub">Ação direta no apetite, no metabolismo e na retenção de líquidos — todos os dias, sem complicação.</p>
+    <h2 class="sec-title" data-ck="benefits.title">O que você sente com 1 cápsula por dia</h2>
+    <p class="sec-sub" data-ck="benefits.sub">Ação direta no apetite, no metabolismo e na retenção de líquidos — todos os dias, sem complicação.</p>
 
     <div class="ledger">
       <div class="ledger-row">
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
-        <div class="txt"><b>Controla o apetite</b><span>Reduz a vontade de beliscar fora dos horários combinados.</span></div>
+        <div class="txt"><b data-ck="benefits.items.0.title">Controla o apetite</b><span data-ck="benefits.items.0.desc">Reduz a vontade de beliscar fora dos horários combinados.</span></div>
       </div>
       <div class="ledger-row">
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
-        <div class="txt"><b>Mais saciedade</b><span>Você se sente satisfeito por mais tempo depois de comer.</span></div>
+        <div class="txt"><b data-ck="benefits.items.1.title">Mais saciedade</b><span data-ck="benefits.items.1.desc">Você se sente satisfeito por mais tempo depois de comer.</span></div>
       </div>
       <div class="ledger-row">
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
-        <div class="txt"><b>Acelera o metabolismo</b><span>Deixa o metabolismo em ritmo mais ativo ao longo do dia.</span></div>
+        <div class="txt"><b data-ck="benefits.items.2.title">Acelera o metabolismo</b><span data-ck="benefits.items.2.desc">Deixa o metabolismo em ritmo mais ativo ao longo do dia.</span></div>
       </div>
       <div class="ledger-row">
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
-        <div class="txt"><b>Reduz a retenção de líquido</b><span>Equilibra os líquidos do corpo ao longo do dia.</span></div>
+        <div class="txt"><b data-ck="benefits.items.3.title">Reduz a retenção de líquido</b><span data-ck="benefits.items.3.desc">Equilibra os líquidos do corpo ao longo do dia.</span></div>
       </div>
       <div class="ledger-row">
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"/></svg></div>
-        <div class="txt"><b>Rotina, não ansiedade</b><span>Uma cápsula por dia — simples de manter, sem complicação.</span></div>
+        <div class="txt"><b data-ck="benefits.items.4.title">Rotina, não ansiedade</b><span data-ck="benefits.items.4.desc">Uma cápsula por dia — simples de manter, sem complicação.</span></div>
       </div>
     </div>
   </div>
@@ -346,45 +347,45 @@
 <section class="strip">
   <div class="wrap">
     <div>
-      <h3>Fórmula multi ervas. Ação direta no seu emagrecimento.</h3>
-      <p>Produto fitoterápico, com responsabilidade farmacêutica e lote e validade gravados no próprio frasco.</p>
+      <h3 data-ck="strip.title">Fórmula multi ervas. Ação direta no seu emagrecimento.</h3>
+      <p data-ck="strip.text">Produto fitoterápico, com responsabilidade farmacêutica e lote e validade gravados no próprio frasco.</p>
     </div>
-    <span class="badge">Fab · Val · Lote no frasco</span>
+    <span class="badge" data-ck="strip.badge">Fab · Val · Lote no frasco</span>
   </div>
 </section>
 
 <section class="pad" id="precos">
   <div class="wrap pricing">
-    <h2 class="sec-title">Escolha o seu frasco</h2>
-    <p class="sec-sub">Entrega para todo o Brasil. Fale no WhatsApp para confirmar disponibilidade e forma de pagamento.</p>
+    <h2 class="sec-title" data-ck="pricing.title">Escolha o seu frasco</h2>
+    <p class="sec-sub" data-ck="pricing.sub">Entrega para todo o Brasil. Fale no WhatsApp para confirmar disponibilidade e forma de pagamento.</p>
 
     <div class="tickets">
       <div class="ticket">
         <div class="tk-head">
           <div>
-            <div class="tk-name">30 cápsulas</div>
-            <div class="tk-tag">Fracionado · selo original</div>
+            <div class="tk-name" data-ck="pricing.p30.name">30 cápsulas</div>
+            <div class="tk-tag" data-ck="pricing.p30.tag">Fracionado · selo original</div>
           </div>
-          <span class="tk-flag">30 dias</span>
+          <span class="tk-flag" data-ck="pricing.p30.flag">30 dias</span>
         </div>
-        <div class="tk-price mono"><sup>R$</sup>110</div>
-        <div class="tk-note">Um ciclo completo de 30 dias para auxiliar o seu emagrecimento.</div>
+        <div class="tk-price mono"><sup>R$</sup><span data-ck="pricing.p30.price">110</span></div>
+        <div class="tk-note" data-ck="pricing.p30.note">Um ciclo completo de 30 dias para auxiliar o seu emagrecimento.</div>
         <hr/>
-        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Tenho%20interesse%20no%20Natu%20Diet%20-%2030%20capsulas%20(fracionado)%20por%20R%24110." target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> Entrar em contato</a>
+        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Tenho%20interesse%20no%20Natu%20Diet%20-%2030%20capsulas%20(fracionado)%20por%20R%24110." target="_blank" rel="noopener" data-wa="p30"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> <span data-ck="pricing.p30.cta">Entrar em contato</span></a>
       </div>
       <div class="ticket featured">
-        <span class="fav">mais pedido</span>
+        <span class="fav" data-ck="pricing.p60.badge">mais pedido</span>
         <div class="tk-head">
           <div>
-            <div class="tk-name">60 cápsulas</div>
-            <div class="tk-tag">Lacrado · selo original</div>
+            <div class="tk-name" data-ck="pricing.p60.name">60 cápsulas</div>
+            <div class="tk-tag" data-ck="pricing.p60.tag">Lacrado · selo original</div>
           </div>
-          <span class="tk-flag">60 dias</span>
+          <span class="tk-flag" data-ck="pricing.p60.flag">60 dias</span>
         </div>
-        <div class="tk-price mono"><sup>R$</sup>180</div>
-        <div class="tk-note">Frasco fechado de fábrica, ciclo completo de 2 meses.</div>
+        <div class="tk-price mono"><sup>R$</sup><span data-ck="pricing.p60.price">180</span></div>
+        <div class="tk-note" data-ck="pricing.p60.note">Frasco fechado de fábrica, ciclo completo de 2 meses.</div>
         <hr/>
-        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Tenho%20interesse%20no%20Natu%20Diet%20-%2060%20capsulas%20(lacrado)%20por%20R%24180." target="_blank" rel="noopener"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> Entrar em contato</a>
+        <a class="btn-wa" href="https://wa.me/5511980026920?text=Ola!%20Tenho%20interesse%20no%20Natu%20Diet%20-%2060%20capsulas%20(lacrado)%20por%20R%24180." target="_blank" rel="noopener" data-wa="p60"><svg viewBox="0 0 32 32" fill="currentColor"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg> <span data-ck="pricing.p60.cta">Entrar em contato</span></a>
       </div>
     </div>
   </div>
@@ -396,30 +397,55 @@
       <div class="bula-block">
         <h4>Contraindicações</h4>
         <ul>
-          <li>Cardiopatas</li>
-          <li>Gestantes e lactantes</li>
-          <li>Menores de 16 e maiores de 60 anos</li>
-          <li>Não ingerir bebidas alcoólicas durante o uso</li>
-          <li>Não associar com outros medicamentos sem orientação</li>
+          <li data-ck="contraindicacoes.0">Cardiopatas</li>
+          <li data-ck="contraindicacoes.1">Gestantes e lactantes</li>
+          <li data-ck="contraindicacoes.2">Menores de 16 e maiores de 60 anos</li>
+          <li data-ck="contraindicacoes.3">Não ingerir bebidas alcoólicas durante o uso</li>
+          <li data-ck="contraindicacoes.4">Não associar com outros medicamentos sem orientação</li>
         </ul>
       </div>
       <div class="bula-block">
         <h4>Autenticidade</h4>
-        <p>Todo frasco original possui selo holográfico Multi Ervas inviolável, com número de fabricação, validade e lote gravados no próprio frasco. Em caso de dúvida sobre a procedência, confirme diretamente pelo WhatsApp antes da compra.</p>
+        <p data-ck="autenticidade">Todo frasco original possui selo holográfico Multi Ervas inviolável, com número de fabricação, validade e lote gravados no próprio frasco. Em caso de dúvida sobre a procedência, confirme diretamente pelo WhatsApp antes da compra.</p>
       </div>
     </div>
-    <div class="fine">
+    <div class="fine" data-ck="fine">
       Composto Natu Diet · Multi Ervas — produto fitoterápico, com responsabilidade farmacêutica.
     </div>
   </div>
 </section>
 
 <footer>
-  <div class="name">Natu Diet</div>
-  <div class="fine2">Multi Ervas · Pedidos via WhatsApp (11) 98002-6920</div>
+  <div class="name" data-ck="brand.name">Natu Diet</div>
+  <div class="fine2"><span data-ck="footer.line">Multi Ervas · Pedidos via WhatsApp</span> <span data-ck="phoneDisplay">(11) 98002-6920</span></div>
 </footer>
 
-<a class="float-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener" aria-label="Falar no WhatsApp"><svg viewBox="0 0 32 32" fill="#062b15"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg></a>
+<a class="float-wa" href="https://wa.me/5511980026920?text=Ola!%20Vim%20pelo%20site%20da%20Natu%20Diet%20e%20quero%20saber%20mais%20sobre%20o%20composto." target="_blank" rel="noopener" aria-label="Falar no WhatsApp" data-wa="hero"><svg viewBox="0 0 32 32" fill="#062b15"><path d="M16.04 3C9.37 3 3.96 8.4 3.96 15.06c0 2.24.61 4.34 1.67 6.15L3 29l7.98-2.58a12.9 12.9 0 0 0 5.06 1.03h.01c6.67 0 12.08-5.4 12.08-12.07C28.13 8.4 22.71 3 16.04 3zm0 21.9h-.01a10.6 10.6 0 0 1-5.46-1.5l-.39-.23-4.73 1.53 1.55-4.6-.25-.4a10.55 10.55 0 0 1-1.66-5.64C5.09 9.55 10.03 4.9 16.04 4.9c2.79 0 5.42 1.09 7.39 3.06a10.4 10.4 0 0 1 3.06 7.4c0 5.94-4.95 10.7-10.45 10.54zm5.71-7.86c-.31-.16-1.86-.92-2.15-1.02-.29-.11-.5-.16-.71.15-.21.31-.81 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.51-1.55-.93-.83-1.56-1.85-1.74-2.16-.18-.31-.02-.48.14-.63.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.54-.71-.55h-.6c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62s1.13 3.04 1.29 3.25c.16.21 2.23 3.4 5.4 4.77.75.33 1.34.52 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.86-.76 2.12-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.6-.36z"/></svg></a>
+
+<script>
+(function(){
+  fetch('./content.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(data){
+    if(!data) return;
+    function get(obj, path){
+      return path.split('.').reduce(function(o,k){ return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
+    }
+    document.querySelectorAll('[data-ck]').forEach(function(el){
+      var val = get(data, el.getAttribute('data-ck'));
+      if(val !== undefined) el.textContent = val;
+    });
+    if(data.colors){
+      var root = document.documentElement.style;
+      var map = { brandBlue:'--brand-blue', brandBlueSoft:'--brand-blue-soft', brandRed:'--brand-red', brandGreen:'--brand-green', heroEmColor:'--hero-em-color' };
+      Object.keys(map).forEach(function(k){ if(data.colors[k]) root.setProperty(map[k], data.colors[k]); });
+    }
+    var phone = data.phone, msgs = data.waMessages || {};
+    document.querySelectorAll('[data-wa]').forEach(function(el){
+      var msg = msgs[el.getAttribute('data-wa')];
+      if(phone && msg) el.setAttribute('href', 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg));
+    });
+  }).catch(function(){});
+})();
+</script>
 
 </body>
 </html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natu Diet — Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  *{box-sizing:border-box;}
+  body{ margin:0; background:#f4fbfd; color:#163542; font-family:'Nunito',system-ui,sans-serif; padding-bottom:80px; }
+  header{ background:#163542; color:#fff; padding:18px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  header h1{ font-size:18px; margin:0; font-weight:800; }
+  header .status{ font-size:13px; opacity:.85; }
+  main{ max-width:760px; margin:0 auto; padding:24px; }
+  fieldset{ border:1px solid #d7e6ea; border-radius:12px; margin-bottom:20px; padding:16px 18px 20px; background:#fff; }
+  legend{ font-weight:800; font-size:15px; padding:0 8px; color:#1596c9; }
+  label{ display:block; font-size:12.5px; font-weight:700; color:#55707a; margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  input[type=text], input[type=password], textarea{
+    width:100%; padding:9px 11px; border:1px solid #cfe0e5; border-radius:8px; font-family:inherit; font-size:14px; color:#163542;
+  }
+  textarea{ resize:vertical; min-height:60px; }
+  input[type=color]{ width:56px; height:34px; padding:2px; border:1px solid #cfe0e5; border-radius:6px; }
+  .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .row > div{ flex:1; min-width:160px; }
+  .colors-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+  .colors-row div{ text-align:center; }
+  .item-block{ border-top:1px dashed #d7e6ea; margin-top:14px; padding-top:10px; }
+  .save-bar{
+    position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #d7e6ea;
+    padding:14px 24px; display:flex; gap:14px; align-items:center; justify-content:center; z-index:10;
+  }
+  .save-bar input[type=password]{ max-width:220px; }
+  button{
+    background:#25d366; color:#062b15; border:none; font-weight:800; font-size:14px; padding:11px 22px;
+    border-radius:999px; cursor:pointer;
+  }
+  button:disabled{ opacity:.6; cursor:default; }
+  .msg{ font-size:13px; font-weight:700; }
+  .msg.ok{ color:#3b6d11; } .msg.err{ color:#a32d2d; }
+  .hint{ font-size:12px; color:#7c8f95; margin-top:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Natu Diet — Painel admin</h1>
+  <span class="status" id="loadStatus">Carregando conteúdo…</span>
+</header>
+<main>
+
+  <fieldset>
+    <legend>Marca &amp; contato</legend>
+    <div class="row">
+      <div><label>Nome da marca</label><input type="text" data-path="brand.name"></div>
+      <div><label>Selo abaixo do nome</label><input type="text" data-path="brand.tag"></div>
+    </div>
+    <div class="row">
+      <div><label>WhatsApp (só números, com DDI+DDD)</label><input type="text" data-path="phone" placeholder="5511999999999"></div>
+      <div><label>WhatsApp exibido no rodapé</label><input type="text" data-path="phoneDisplay" placeholder="(11) 99999-9999"></div>
+    </div>
+    <label>Mensagem — botão principal</label>
+    <textarea data-path="waMessages.hero"></textarea>
+    <label>Mensagem — cartão 30 cápsulas</label>
+    <textarea data-path="waMessages.p30"></textarea>
+    <label>Mensagem — cartão 60 cápsulas</label>
+    <textarea data-path="waMessages.p60"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>Cores</legend>
+    <div class="colors-row">
+      <div><input type="color" data-path="colors.brandBlue"><div class="hint">Azul</div></div>
+      <div><input type="color" data-path="colors.brandBlueSoft"><div class="hint">Azul claro</div></div>
+      <div><input type="color" data-path="colors.brandRed"><div class="hint">Vermelho</div></div>
+      <div><input type="color" data-path="colors.brandGreen"><div class="hint">Verde</div></div>
+      <div><input type="color" data-path="colors.heroEmColor"><div class="hint">Destaque do título</div></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Topo (hero)</legend>
+    <label>Linha pequena acima do título</label>
+    <input type="text" data-path="hero.eyebrow">
+    <div class="row">
+      <div><label>Título — antes do destaque</label><input type="text" data-path="hero.titleBefore"></div>
+      <div><label>Título — palavra em destaque</label><input type="text" data-path="hero.titleEm"></div>
+      <div><label>Título — depois do destaque</label><input type="text" data-path="hero.titleAfter"></div>
+    </div>
+    <label>Texto abaixo do título</label>
+    <textarea data-path="hero.lede"></textarea>
+    <div class="row">
+      <div><label>Botão principal</label><input type="text" data-path="hero.ctaPrimary"></div>
+      <div><label>Botão secundário</label><input type="text" data-path="hero.ctaSecondary"></div>
+    </div>
+    <label>Aviso do selo (abaixo dos botões)</label>
+    <input type="text" data-path="hero.note">
+  </fieldset>
+
+  <fieldset>
+    <legend>Sugestão de uso</legend>
+    <label>Título da seção</label>
+    <input type="text" data-path="ficha.heading">
+    <div class="item-block">
+      <div class="row">
+        <div><label>Rótulo 1</label><input type="text" data-path="ficha.cap.k"></div>
+        <div><label>Valor 1</label><input type="text" data-path="ficha.cap.v"></div>
+      </div>
+      <label>Descrição 1</label><textarea data-path="ficha.cap.d"></textarea>
+    </div>
+    <div class="item-block">
+      <div class="row">
+        <div><label>Rótulo 2</label><input type="text" data-path="ficha.food.k"></div>
+        <div><label>Valor 2</label><input type="text" data-path="ficha.food.v"></div>
+      </div>
+      <label>Descrição 2</label><textarea data-path="ficha.food.d"></textarea>
+    </div>
+    <div class="item-block">
+      <div class="row">
+        <div><label>Rótulo 3</label><input type="text" data-path="ficha.water.k"></div>
+        <div><label>Valor 3</label><input type="text" data-path="ficha.water.v"></div>
+      </div>
+      <label>Descrição 3</label><textarea data-path="ficha.water.d"></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Benefícios</legend>
+    <label>Título da seção</label>
+    <input type="text" data-path="benefits.title">
+    <label>Subtítulo</label>
+    <textarea data-path="benefits.sub"></textarea>
+    <div id="benefitItems"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Faixa azul (fórmula)</legend>
+    <label>Título</label>
+    <input type="text" data-path="strip.title">
+    <label>Texto</label>
+    <textarea data-path="strip.text"></textarea>
+    <label>Selo à direita</label>
+    <input type="text" data-path="strip.badge">
+  </fieldset>
+
+  <fieldset>
+    <legend>Preços</legend>
+    <label>Título da seção</label>
+    <input type="text" data-path="pricing.title">
+    <label>Subtítulo</label>
+    <textarea data-path="pricing.sub"></textarea>
+
+    <div class="item-block">
+      <strong>Cartão 30 cápsulas</strong>
+      <div class="row">
+        <div><label>Nome</label><input type="text" data-path="pricing.p30.name"></div>
+        <div><label>Selo</label><input type="text" data-path="pricing.p30.tag"></div>
+        <div><label>Etiqueta canto</label><input type="text" data-path="pricing.p30.flag"></div>
+      </div>
+      <div class="row">
+        <div><label>Preço (só número)</label><input type="text" data-path="pricing.p30.price"></div>
+        <div><label>Texto do botão</label><input type="text" data-path="pricing.p30.cta"></div>
+      </div>
+      <label>Observação</label>
+      <textarea data-path="pricing.p30.note"></textarea>
+    </div>
+
+    <div class="item-block">
+      <strong>Cartão 60 cápsulas</strong>
+      <div class="row">
+        <div><label>Nome</label><input type="text" data-path="pricing.p60.name"></div>
+        <div><label>Selo</label><input type="text" data-path="pricing.p60.tag"></div>
+        <div><label>Etiqueta canto</label><input type="text" data-path="pricing.p60.flag"></div>
+      </div>
+      <div class="row">
+        <div><label>Preço (só número)</label><input type="text" data-path="pricing.p60.price"></div>
+        <div><label>Texto do botão</label><input type="text" data-path="pricing.p60.cta"></div>
+      </div>
+      <label>Faixa "mais pedido"</label>
+      <input type="text" data-path="pricing.p60.badge">
+      <label>Observação</label>
+      <textarea data-path="pricing.p60.note"></textarea>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Contraindicações</legend>
+    <div id="contraItems"></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Autenticidade &amp; rodapé</legend>
+    <label>Texto de autenticidade</label>
+    <textarea data-path="autenticidade"></textarea>
+    <label>Linha final (regulatório)</label>
+    <textarea data-path="fine"></textarea>
+    <label>Linha do rodapé (antes do telefone)</label>
+    <input type="text" data-path="footer.line">
+  </fieldset>
+
+</main>
+
+<div class="save-bar">
+  <input type="password" id="token" placeholder="Senha do admin">
+  <button id="saveBtn">Salvar alterações</button>
+  <span class="msg" id="msg"></span>
+</div>
+
+<script>
+  var BENEFIT_COUNT = 5, CONTRA_COUNT = 5;
+
+  function pathGet(obj, path){
+    return path.split('.').reduce(function(o,k){ return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
+  }
+  function pathSet(obj, path, value){
+    var parts = path.split('.'), cur = obj;
+    for (var i = 0; i < parts.length - 1; i++){
+      var key = parts[i], nextKey = parts[i+1], isArrayNext = /^\d+$/.test(nextKey);
+      if (cur[key] === undefined) cur[key] = isArrayNext ? [] : {};
+      cur = cur[key];
+    }
+    cur[parts[parts.length - 1]] = value;
+  }
+
+  var benefitItemsEl = document.getElementById('benefitItems');
+  for (var i = 0; i < BENEFIT_COUNT; i++){
+    var div = document.createElement('div');
+    div.className = 'item-block';
+    div.innerHTML =
+      '<label>Item ' + (i+1) + ' — título</label>' +
+      '<input type="text" data-path="benefits.items.' + i + '.title">' +
+      '<label>Item ' + (i+1) + ' — descrição</label>' +
+      '<textarea data-path="benefits.items.' + i + '.desc"></textarea>';
+    benefitItemsEl.appendChild(div);
+  }
+
+  var contraItemsEl = document.getElementById('contraItems');
+  for (var j = 0; j < CONTRA_COUNT; j++){
+    var label = document.createElement('label');
+    label.textContent = 'Item ' + (j+1);
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.setAttribute('data-path', 'contraindicacoes.' + j);
+    contraItemsEl.appendChild(label);
+    contraItemsEl.appendChild(input);
+  }
+
+  fetch('/content.json', { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      document.querySelectorAll('[data-path]').forEach(function(el){
+        var val = pathGet(data, el.getAttribute('data-path'));
+        if (val !== undefined) el.value = val;
+      });
+      document.getElementById('loadStatus').textContent = 'Conteúdo carregado';
+    })
+    .catch(function(){
+      document.getElementById('loadStatus').textContent = 'Não achei content.json (site novo?)';
+    });
+
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    var msg = document.getElementById('msg');
+    var token = document.getElementById('token').value;
+    if (!token){ msg.textContent = 'Digite a senha primeiro.'; msg.className = 'msg err'; return; }
+
+    var content = {};
+    document.querySelectorAll('[data-path]').forEach(function(el){
+      pathSet(content, el.getAttribute('data-path'), el.value);
+    });
+
+    var btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    msg.textContent = 'Salvando…';
+    msg.className = 'msg';
+
+    fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, content: content })
+    })
+      .then(function(r){ return r.json().then(function(body){ return { ok: r.ok, body: body }; }); })
+      .then(function(res){
+        btn.disabled = false;
+        if (res.ok){
+          msg.textContent = 'Salvo! O site atualiza em ~1 minuto.';
+          msg.className = 'msg ok';
+        } else {
+          msg.textContent = 'Erro: ' + (res.body.error || 'falha ao salvar');
+          msg.className = 'msg err';
+        }
+      })
+      .catch(function(err){
+        btn.disabled = false;
+        msg.textContent = 'Erro de rede: ' + err;
+        msg.className = 'msg err';
+      });
+  });
+</script>
+</body>
+</html>

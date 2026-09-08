@@ -1,0 +1,80 @@
+{
+  "brand": { "name": "Natu Diet", "tag": "Composto · Multi Ervas" },
+  "phone": "5511980026920",
+  "phoneDisplay": "(11) 98002-6920",
+  "waMessages": {
+    "hero": "Ola! Vim pelo site da Natu Diet e quero saber mais sobre o composto.",
+    "p30": "Ola! Tenho interesse no Natu Diet - 30 capsulas (fracionado) por R$110.",
+    "p60": "Ola! Tenho interesse no Natu Diet - 60 capsulas (lacrado) por R$180."
+  },
+  "colors": {
+    "brandBlue": "#1596c9",
+    "brandBlueSoft": "#59bde3",
+    "brandRed": "#c2453a",
+    "brandGreen": "#5a9c4c",
+    "heroEmColor": "#7dd3fc"
+  },
+  "hero": {
+    "eyebrow": "Produto fitoterápico · Frascos de 30 ou 60 cápsulas · Multi ervas",
+    "titleBefore": "Simplifique o seu emagrecimento em",
+    "titleEm": "1 cápsula",
+    "titleAfter": "por dia.",
+    "lede": "Composto natural multi ervas que age todos os dias na sua rotina: controla o apetite, acelera o metabolismo e reduz a retenção de líquidos — em um único horário fixo, ao lado de uma alimentação equilibrada.",
+    "ctaPrimary": "Pedir pelo WhatsApp",
+    "ctaSecondary": "Ver preços",
+    "note": "Frasco lacrado com selo holográfico de autenticidade Multi Ervas."
+  },
+  "ficha": {
+    "heading": "Sugestão de uso",
+    "cap": { "k": "Cápsulas / dia", "v": "1 cápsula", "d": "1 cápsula por dia, sempre no mesmo horário — de preferência após o café da manhã." },
+    "food": { "k": "Alimentação", "v": "3 em 3h", "d": "Refeições leves e regulares ao longo do dia, mesmo sem fome." },
+    "water": { "k": "Água", "v": "≥ 3 L / dia", "d": "Hidratação mínima recomendada durante o uso do composto." }
+  },
+  "benefits": {
+    "title": "O que você sente com 1 cápsula por dia",
+    "sub": "Ação direta no apetite, no metabolismo e na retenção de líquidos — todos os dias, sem complicação.",
+    "items": [
+      { "title": "Controla o apetite", "desc": "Reduz a vontade de beliscar fora dos horários combinados." },
+      { "title": "Mais saciedade", "desc": "Você se sente satisfeito por mais tempo depois de comer." },
+      { "title": "Acelera o metabolismo", "desc": "Deixa o metabolismo em ritmo mais ativo ao longo do dia." },
+      { "title": "Reduz a retenção de líquido", "desc": "Equilibra os líquidos do corpo ao longo do dia." },
+      { "title": "Rotina, não ansiedade", "desc": "Uma cápsula por dia — simples de manter, sem complicação." }
+    ]
+  },
+  "strip": {
+    "title": "Fórmula multi ervas. Ação direta no seu emagrecimento.",
+    "text": "Produto fitoterápico, com responsabilidade farmacêutica e lote e validade gravados no próprio frasco.",
+    "badge": "Fab · Val · Lote no frasco"
+  },
+  "pricing": {
+    "title": "Escolha o seu frasco",
+    "sub": "Entrega para todo o Brasil. Fale no WhatsApp para confirmar disponibilidade e forma de pagamento.",
+    "p30": {
+      "name": "30 cápsulas",
+      "tag": "Fracionado · selo original",
+      "flag": "30 dias",
+      "price": "110",
+      "note": "Um ciclo completo de 30 dias para auxiliar o seu emagrecimento.",
+      "cta": "Entrar em contato"
+    },
+    "p60": {
+      "name": "60 cápsulas",
+      "tag": "Lacrado · selo original",
+      "flag": "60 dias",
+      "price": "180",
+      "note": "Frasco fechado de fábrica, ciclo completo de 2 meses.",
+      "cta": "Entrar em contato",
+      "badge": "mais pedido"
+    }
+  },
+  "contraindicacoes": [
+    "Cardiopatas",
+    "Gestantes e lactantes",
+    "Menores de 16 e maiores de 60 anos",
+    "Não ingerir bebidas alcoólicas durante o uso",
+    "Não associar com outros medicamentos sem orientação"
+  ],
+  "autenticidade": "Todo frasco original possui selo holográfico Multi Ervas inviolável, com número de fabricação, validade e lote gravados no próprio frasco. Em caso de dúvida sobre a procedência, confirme diretamente pelo WhatsApp antes da compra.",
+  "fine": "Composto Natu Diet · Multi Ervas — produto fitoterápico, com responsabilidade farmacêutica.",
+  "footer": { "line": "Multi Ervas · Pedidos via WhatsApp" }
+}
