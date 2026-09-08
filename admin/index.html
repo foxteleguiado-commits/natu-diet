@@ -7,205 +7,249 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
   *{box-sizing:border-box;}
-  body{ margin:0; background:#f4fbfd; color:#163542; font-family:'Nunito',system-ui,sans-serif; padding-bottom:80px; }
-  header{ background:#163542; color:#fff; padding:18px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
-  header h1{ font-size:18px; margin:0; font-weight:800; }
-  header .status{ font-size:13px; opacity:.85; }
-  main{ max-width:760px; margin:0 auto; padding:24px; }
-  fieldset{ border:1px solid #d7e6ea; border-radius:12px; margin-bottom:20px; padding:16px 18px 20px; background:#fff; }
-  legend{ font-weight:800; font-size:15px; padding:0 8px; color:#1596c9; }
-  label{ display:block; font-size:12.5px; font-weight:700; color:#55707a; margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  body{ margin:0; background:#f4fbfd; color:#163542; font-family:'Nunito',system-ui,sans-serif; }
+  a{ color:#1596c9; }
+
+  header{
+    background:#163542; color:#fff; padding:14px 20px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:20; gap:12px; flex-wrap:wrap;
+  }
+  header h1{ font-size:16px; margin:0; font-weight:800; }
+  header .status{ font-size:12.5px; opacity:.8; }
+  header a.view-site{ font-size:12.5px; color:#9fe1cb; text-decoration:none; font-weight:700; }
+
+  .shell{ display:flex; min-height:calc(100vh - 52px); }
+
+  nav.sidebar{
+    width:220px; flex:none; background:#fff; border-right:1px solid #d7e6ea; padding:14px 10px;
+    position:sticky; top:52px; height:calc(100vh - 52px); overflow-y:auto;
+  }
+  nav.sidebar button{
+    display:flex; align-items:center; gap:10px; width:100%; text-align:left; background:none; border:none;
+    padding:10px 12px; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:700; color:#55707a;
+    cursor:pointer; margin-bottom:2px;
+  }
+  nav.sidebar button .dot{ width:8px; height:8px; border-radius:50%; background:#cfe0e5; flex:none; }
+  nav.sidebar button:hover{ background:#f0f8fa; }
+  nav.sidebar button.active{ background:#e6f1fb; color:#0c447c; }
+  nav.sidebar button.active .dot{ background:#1596c9; }
+
+  main{ flex:1; padding:26px 28px 120px; max-width:720px; }
+  .cat{ display:none; }
+  .cat.active{ display:block; animation:fadeIn .15s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+
+  .cat h2{ font-size:20px; margin:0 0 4px; font-weight:800; color:#163542; }
+  .cat p.desc{ font-size:13px; color:#7c8f95; margin:0 0 22px; }
+
+  .card{ background:#fff; border:1px solid #d7e6ea; border-radius:12px; padding:18px 20px; margin-bottom:16px; }
+  .card > strong.card-title{ display:block; font-size:13px; color:#1596c9; text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px; }
+
+  label{ display:block; font-size:12px; font-weight:700; color:#55707a; margin:12px 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+  label:first-of-type{ margin-top:0; }
   input[type=text], input[type=password], textarea{
     width:100%; padding:9px 11px; border:1px solid #cfe0e5; border-radius:8px; font-family:inherit; font-size:14px; color:#163542;
   }
+  input[type=text]:focus, textarea:focus{ outline:2px solid #85b7eb; outline-offset:1px; }
   textarea{ resize:vertical; min-height:60px; }
-  input[type=color]{ width:56px; height:34px; padding:2px; border:1px solid #cfe0e5; border-radius:6px; }
+  input[type=color]{ width:52px; height:34px; padding:2px; border:1px solid #cfe0e5; border-radius:6px; vertical-align:middle; }
   .row{ display:flex; gap:14px; flex-wrap:wrap; }
-  .row > div{ flex:1; min-width:160px; }
-  .colors-row{ display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
-  .colors-row div{ text-align:center; }
-  .item-block{ border-top:1px dashed #d7e6ea; margin-top:14px; padding-top:10px; }
+  .row > div{ flex:1; min-width:150px; }
+
+  .color-item{ display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid #f0f4f5; }
+  .color-item:last-child{ border-bottom:none; }
+  .color-item .swatch-label{ flex:1; font-size:13.5px; font-weight:700; }
+  .color-item .swatch-hint{ font-size:12px; color:#8a9aa0; font-weight:400; display:block; }
+
+  .hint{ font-size:12px; color:#8a9aa0; margin-top:6px; }
+
   .save-bar{
     position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #d7e6ea;
-    padding:14px 24px; display:flex; gap:14px; align-items:center; justify-content:center; z-index:10;
+    padding:12px 20px; display:flex; gap:12px; align-items:center; justify-content:flex-end; z-index:20;
   }
-  .save-bar input[type=password]{ max-width:220px; }
-  button{
+  .save-bar input[type=password]{ max-width:200px; }
+  button.save{
     background:#25d366; color:#062b15; border:none; font-weight:800; font-size:14px; padding:11px 22px;
     border-radius:999px; cursor:pointer;
   }
-  button:disabled{ opacity:.6; cursor:default; }
-  .msg{ font-size:13px; font-weight:700; }
+  button.save:disabled{ opacity:.6; cursor:default; }
+  .msg{ font-size:12.5px; font-weight:700; margin-right:auto; }
   .msg.ok{ color:#3b6d11; } .msg.err{ color:#a32d2d; }
-  .hint{ font-size:12px; color:#7c8f95; margin-top:4px; }
+
+  @media (max-width:760px){
+    .shell{ flex-direction:column; }
+    nav.sidebar{ width:100%; height:auto; position:static; display:flex; overflow-x:auto; padding:8px; gap:4px; }
+    nav.sidebar button{ white-space:nowrap; width:auto; }
+    main{ padding:20px 16px 120px; }
+    .save-bar{ flex-wrap:wrap; justify-content:center; }
+    .msg{ margin-right:0; width:100%; text-align:center; }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Natu Diet — Painel admin</h1>
-  <span class="status" id="loadStatus">Carregando conteúdo…</span>
+  <h1>Natu Diet — painel admin</h1>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a class="view-site" href="/" target="_blank">Ver site ↗</a>
+    <span class="status" id="loadStatus">Carregando…</span>
+  </div>
 </header>
-<main>
 
-  <fieldset>
-    <legend>Marca &amp; contato</legend>
-    <div class="row">
-      <div><label>Nome da marca</label><input type="text" data-path="brand.name"></div>
-      <div><label>Selo abaixo do nome</label><input type="text" data-path="brand.tag"></div>
-    </div>
-    <div class="row">
-      <div><label>WhatsApp (só números, com DDI+DDD)</label><input type="text" data-path="phone" placeholder="5511999999999"></div>
-      <div><label>WhatsApp exibido no rodapé</label><input type="text" data-path="phoneDisplay" placeholder="(11) 99999-9999"></div>
-    </div>
-    <label>Mensagem — botão principal</label>
-    <textarea data-path="waMessages.hero"></textarea>
-    <label>Mensagem — cartão 30 cápsulas</label>
-    <textarea data-path="waMessages.p30"></textarea>
-    <label>Mensagem — cartão 60 cápsulas</label>
-    <textarea data-path="waMessages.p60"></textarea>
-  </fieldset>
-
-  <fieldset>
-    <legend>Cores</legend>
-    <div class="colors-row">
-      <div><input type="color" data-path="colors.brandBlue"><div class="hint">Azul</div></div>
-      <div><input type="color" data-path="colors.brandBlueSoft"><div class="hint">Azul claro</div></div>
-      <div><input type="color" data-path="colors.brandRed"><div class="hint">Vermelho</div></div>
-      <div><input type="color" data-path="colors.brandGreen"><div class="hint">Verde</div></div>
-      <div><input type="color" data-path="colors.heroEmColor"><div class="hint">Destaque do título</div></div>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Topo (hero)</legend>
-    <label>Linha pequena acima do título</label>
-    <input type="text" data-path="hero.eyebrow">
-    <div class="row">
-      <div><label>Título — antes do destaque</label><input type="text" data-path="hero.titleBefore"></div>
-      <div><label>Título — palavra em destaque</label><input type="text" data-path="hero.titleEm"></div>
-      <div><label>Título — depois do destaque</label><input type="text" data-path="hero.titleAfter"></div>
-    </div>
-    <label>Texto abaixo do título</label>
-    <textarea data-path="hero.lede"></textarea>
-    <div class="row">
-      <div><label>Botão principal</label><input type="text" data-path="hero.ctaPrimary"></div>
-      <div><label>Botão secundário</label><input type="text" data-path="hero.ctaSecondary"></div>
-    </div>
-    <label>Aviso do selo (abaixo dos botões)</label>
-    <input type="text" data-path="hero.note">
-  </fieldset>
-
-  <fieldset>
-    <legend>Sugestão de uso</legend>
-    <label>Título da seção</label>
-    <input type="text" data-path="ficha.heading">
-    <div class="item-block">
-      <div class="row">
-        <div><label>Rótulo 1</label><input type="text" data-path="ficha.cap.k"></div>
-        <div><label>Valor 1</label><input type="text" data-path="ficha.cap.v"></div>
-      </div>
-      <label>Descrição 1</label><textarea data-path="ficha.cap.d"></textarea>
-    </div>
-    <div class="item-block">
-      <div class="row">
-        <div><label>Rótulo 2</label><input type="text" data-path="ficha.food.k"></div>
-        <div><label>Valor 2</label><input type="text" data-path="ficha.food.v"></div>
-      </div>
-      <label>Descrição 2</label><textarea data-path="ficha.food.d"></textarea>
-    </div>
-    <div class="item-block">
-      <div class="row">
-        <div><label>Rótulo 3</label><input type="text" data-path="ficha.water.k"></div>
-        <div><label>Valor 3</label><input type="text" data-path="ficha.water.v"></div>
-      </div>
-      <label>Descrição 3</label><textarea data-path="ficha.water.d"></textarea>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Benefícios</legend>
-    <label>Título da seção</label>
-    <input type="text" data-path="benefits.title">
-    <label>Subtítulo</label>
-    <textarea data-path="benefits.sub"></textarea>
-    <div id="benefitItems"></div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Faixa azul (fórmula)</legend>
-    <label>Título</label>
-    <input type="text" data-path="strip.title">
-    <label>Texto</label>
-    <textarea data-path="strip.text"></textarea>
-    <label>Selo à direita</label>
-    <input type="text" data-path="strip.badge">
-  </fieldset>
-
-  <fieldset>
-    <legend>Preços</legend>
-    <label>Título da seção</label>
-    <input type="text" data-path="pricing.title">
-    <label>Subtítulo</label>
-    <textarea data-path="pricing.sub"></textarea>
-
-    <div class="item-block">
-      <strong>Cartão 30 cápsulas</strong>
-      <div class="row">
-        <div><label>Nome</label><input type="text" data-path="pricing.p30.name"></div>
-        <div><label>Selo</label><input type="text" data-path="pricing.p30.tag"></div>
-        <div><label>Etiqueta canto</label><input type="text" data-path="pricing.p30.flag"></div>
-      </div>
-      <div class="row">
-        <div><label>Preço (só número)</label><input type="text" data-path="pricing.p30.price"></div>
-        <div><label>Texto do botão</label><input type="text" data-path="pricing.p30.cta"></div>
-      </div>
-      <label>Observação</label>
-      <textarea data-path="pricing.p30.note"></textarea>
-    </div>
-
-    <div class="item-block">
-      <strong>Cartão 60 cápsulas</strong>
-      <div class="row">
-        <div><label>Nome</label><input type="text" data-path="pricing.p60.name"></div>
-        <div><label>Selo</label><input type="text" data-path="pricing.p60.tag"></div>
-        <div><label>Etiqueta canto</label><input type="text" data-path="pricing.p60.flag"></div>
-      </div>
-      <div class="row">
-        <div><label>Preço (só número)</label><input type="text" data-path="pricing.p60.price"></div>
-        <div><label>Texto do botão</label><input type="text" data-path="pricing.p60.cta"></div>
-      </div>
-      <label>Faixa "mais pedido"</label>
-      <input type="text" data-path="pricing.p60.badge">
-      <label>Observação</label>
-      <textarea data-path="pricing.p60.note"></textarea>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Contraindicações</legend>
-    <div id="contraItems"></div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Autenticidade &amp; rodapé</legend>
-    <label>Texto de autenticidade</label>
-    <textarea data-path="autenticidade"></textarea>
-    <label>Linha final (regulatório)</label>
-    <textarea data-path="fine"></textarea>
-    <label>Linha do rodapé (antes do telefone)</label>
-    <input type="text" data-path="footer.line">
-  </fieldset>
-
-</main>
+<div class="shell">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main id="main"></main>
+</div>
 
 <div class="save-bar">
-  <input type="password" id="token" placeholder="Senha do admin">
-  <button id="saveBtn">Salvar alterações</button>
   <span class="msg" id="msg"></span>
+  <input type="password" id="token" placeholder="Senha do admin">
+  <button class="save" id="saveBtn">Salvar alterações</button>
 </div>
 
 <script>
-  var BENEFIT_COUNT = 5, CONTRA_COUNT = 5;
+  var CATEGORIES = [
+    { id: 'marca', label: 'Marca e contato' },
+    { id: 'cores', label: 'Cores' },
+    { id: 'hero', label: 'Topo do site' },
+    { id: 'uso', label: 'Sugestão de uso' },
+    { id: 'beneficios', label: 'Benefícios' },
+    { id: 'faixa', label: 'Faixa da fórmula' },
+    { id: 'precos', label: 'Preços' },
+    { id: 'contra', label: 'Contraindicações' },
+    { id: 'rodape', label: 'Autenticidade e rodapé' }
+  ];
+  var COLOR_LABELS = {
+    brandBlue: ['Azul principal', 'Títulos de preço, links e detalhes'],
+    brandBlueSoft: ['Azul claro', 'Faixa da fórmula e acentos suaves'],
+    brandRed: ['Vermelho', '"Mais pedido" e destaques'],
+    brandGreen: ['Verde', 'Ícones de check dos benefícios'],
+    heroEmColor: ['Destaque do título', 'Palavra "1 cápsula" no topo']
+  };
+
+  function el(html){ var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+
+  function benefitBlock(i){
+    return '<div class="row"><div style="flex:2 1 260px;">' +
+      '<label>Item ' + (i+1) + ' — título</label><input type="text" data-path="benefits.items.' + i + '.title">' +
+      '<label>Item ' + (i+1) + ' — descrição</label><textarea data-path="benefits.items.' + i + '.desc"></textarea>' +
+      '</div></div>';
+  }
+
+  var CAT_HTML = {
+    marca:
+      '<h2>Marca e contato</h2><p class="desc">Nome exibido no site e os números/mensagens do WhatsApp.</p>' +
+      '<div class="card"><strong class="card-title">Identidade</strong>' +
+        '<div class="row"><div><label>Nome da marca</label><input type="text" data-path="brand.name"></div>' +
+        '<div><label>Selo abaixo do nome</label><input type="text" data-path="brand.tag"></div></div></div>' +
+      '<div class="card"><strong class="card-title">WhatsApp</strong>' +
+        '<div class="row"><div><label>Número (DDI+DDD+número, só dígitos)</label><input type="text" data-path="phone" placeholder="5511999999999"></div>' +
+        '<div><label>Número exibido no rodapé</label><input type="text" data-path="phoneDisplay" placeholder="(11) 99999-9999"></div></div>' +
+        '<label>Mensagem — botão principal</label><textarea data-path="waMessages.hero"></textarea>' +
+        '<label>Mensagem — cartão 30 cápsulas</label><textarea data-path="waMessages.p30"></textarea>' +
+        '<label>Mensagem — cartão 60 cápsulas</label><textarea data-path="waMessages.p60"></textarea></div>',
+
+    cores:
+      '<h2>Cores</h2><p class="desc">Clique no quadrado colorido pra escolher uma nova cor.</p>' +
+      '<div class="card">' + Object.keys(COLOR_LABELS).map(function(key){
+        var lbl = COLOR_LABELS[key];
+        return '<div class="color-item"><input type="color" data-path="colors.' + key + '">' +
+          '<div class="swatch-label">' + lbl[0] + '<span class="swatch-hint">' + lbl[1] + '</span></div></div>';
+      }).join('') + '</div>',
+
+    hero:
+      '<h2>Topo do site</h2><p class="desc">O primeiro bloco que a pessoa vê ao abrir o site.</p>' +
+      '<div class="card"><strong class="card-title">Título</strong>' +
+        '<label>Linha pequena acima do título</label><input type="text" data-path="hero.eyebrow">' +
+        '<div class="row"><div><label>Antes do destaque</label><input type="text" data-path="hero.titleBefore"></div>' +
+        '<div><label>Palavra em destaque</label><input type="text" data-path="hero.titleEm"></div>' +
+        '<div><label>Depois do destaque</label><input type="text" data-path="hero.titleAfter"></div></div>' +
+        '<div class="hint">Fica assim: [antes] <b>[destaque]</b> [depois]</div></div>' +
+      '<div class="card"><strong class="card-title">Texto e botões</strong>' +
+        '<label>Texto abaixo do título</label><textarea data-path="hero.lede"></textarea>' +
+        '<div class="row"><div><label>Botão principal</label><input type="text" data-path="hero.ctaPrimary"></div>' +
+        '<div><label>Botão secundário</label><input type="text" data-path="hero.ctaSecondary"></div></div>' +
+        '<label>Aviso do selo (abaixo dos botões)</label><input type="text" data-path="hero.note"></div>',
+
+    uso:
+      '<h2>Sugestão de uso</h2><p class="desc">Os 3 quadros com o modo de uso do composto.</p>' +
+      '<label style="margin:0 0 10px;">Título da seção</label><input type="text" data-path="ficha.heading" style="margin-bottom:16px;">' +
+      '<div class="card"><strong class="card-title">Quadro 1</strong>' +
+        '<div class="row"><div><label>Rótulo</label><input type="text" data-path="ficha.cap.k"></div><div><label>Valor</label><input type="text" data-path="ficha.cap.v"></div></div>' +
+        '<label>Descrição</label><textarea data-path="ficha.cap.d"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Quadro 2</strong>' +
+        '<div class="row"><div><label>Rótulo</label><input type="text" data-path="ficha.food.k"></div><div><label>Valor</label><input type="text" data-path="ficha.food.v"></div></div>' +
+        '<label>Descrição</label><textarea data-path="ficha.food.d"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Quadro 3</strong>' +
+        '<div class="row"><div><label>Rótulo</label><input type="text" data-path="ficha.water.k"></div><div><label>Valor</label><input type="text" data-path="ficha.water.v"></div></div>' +
+        '<label>Descrição</label><textarea data-path="ficha.water.d"></textarea></div>',
+
+    beneficios:
+      '<h2>Benefícios</h2><p class="desc">A lista de 5 itens com check verde.</p>' +
+      '<div class="card"><strong class="card-title">Cabeçalho</strong>' +
+        '<label>Título da seção</label><input type="text" data-path="benefits.title">' +
+        '<label>Subtítulo</label><textarea data-path="benefits.sub"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Os 5 itens</strong>' + [0,1,2,3,4].map(benefitBlock).join('<hr style="border:none;border-top:1px dashed #e2edf0;margin:14px 0;">') + '</div>',
+
+    faixa:
+      '<h2>Faixa da fórmula</h2><p class="desc">A faixa azul entre os benefícios e os preços.</p>' +
+      '<div class="card"><label>Título</label><input type="text" data-path="strip.title">' +
+        '<label>Texto</label><textarea data-path="strip.text"></textarea>' +
+        '<label>Selo à direita</label><input type="text" data-path="strip.badge"></div>',
+
+    precos:
+      '<h2>Preços</h2><p class="desc">Os dois cartões de venda.</p>' +
+      '<div class="card"><strong class="card-title">Cabeçalho</strong>' +
+        '<label>Título da seção</label><input type="text" data-path="pricing.title">' +
+        '<label>Subtítulo</label><textarea data-path="pricing.sub"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Cartão 30 cápsulas</strong>' +
+        '<div class="row"><div><label>Nome</label><input type="text" data-path="pricing.p30.name"></div>' +
+        '<div><label>Selo</label><input type="text" data-path="pricing.p30.tag"></div>' +
+        '<div><label>Etiqueta do canto</label><input type="text" data-path="pricing.p30.flag"></div></div>' +
+        '<div class="row"><div><label>Preço (só número)</label><input type="text" data-path="pricing.p30.price"></div>' +
+        '<div><label>Texto do botão</label><input type="text" data-path="pricing.p30.cta"></div></div>' +
+        '<label>Observação</label><textarea data-path="pricing.p30.note"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Cartão 60 cápsulas</strong>' +
+        '<div class="row"><div><label>Nome</label><input type="text" data-path="pricing.p60.name"></div>' +
+        '<div><label>Selo</label><input type="text" data-path="pricing.p60.tag"></div>' +
+        '<div><label>Etiqueta do canto</label><input type="text" data-path="pricing.p60.flag"></div></div>' +
+        '<div class="row"><div><label>Preço (só número)</label><input type="text" data-path="pricing.p60.price"></div>' +
+        '<div><label>Texto do botão</label><input type="text" data-path="pricing.p60.cta"></div></div>' +
+        '<label>Faixa "mais pedido"</label><input type="text" data-path="pricing.p60.badge">' +
+        '<label>Observação</label><textarea data-path="pricing.p60.note"></textarea></div>',
+
+    contra:
+      '<h2>Contraindicações</h2><p class="desc">Lista de avisos exibida no rodapé do site.</p>' +
+      '<div class="card">' + [0,1,2,3,4].map(function(j){
+        return '<label>Item ' + (j+1) + '</label><input type="text" data-path="contraindicacoes.' + j + '">';
+      }).join('') + '</div>',
+
+    rodape:
+      '<h2>Autenticidade e rodapé</h2><p class="desc">Textos finais de confiança e regulatórios.</p>' +
+      '<div class="card"><label>Texto de autenticidade</label><textarea data-path="autenticidade"></textarea>' +
+        '<label>Linha final (regulatório)</label><textarea data-path="fine"></textarea>' +
+        '<label>Linha do rodapé (antes do telefone)</label><input type="text" data-path="footer.line"></div>'
+  };
+
+  var sidebar = document.getElementById('sidebar');
+  var main = document.getElementById('main');
+
+  CATEGORIES.forEach(function(cat, idx){
+    var btn = document.createElement('button');
+    btn.innerHTML = '<span class="dot"></span>' + cat.label;
+    btn.dataset.cat = cat.id;
+    if (idx === 0) btn.className = 'active';
+    btn.addEventListener('click', function(){ selectCat(cat.id); });
+    sidebar.appendChild(btn);
+
+    var section = el('<section class="cat' + (idx === 0 ? ' active' : '') + '" id="cat-' + cat.id + '">' + CAT_HTML[cat.id] + '</section>');
+    main.appendChild(section);
+  });
+
+  function selectCat(id){
+    document.querySelectorAll('nav.sidebar button').forEach(function(b){ b.classList.toggle('active', b.dataset.cat === id); });
+    document.querySelectorAll('main .cat').forEach(function(s){ s.classList.toggle('active', s.id === 'cat-' + id); });
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
 
   function pathGet(obj, path){
     return path.split('.').reduce(function(o,k){ return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
@@ -220,35 +264,12 @@
     cur[parts[parts.length - 1]] = value;
   }
 
-  var benefitItemsEl = document.getElementById('benefitItems');
-  for (var i = 0; i < BENEFIT_COUNT; i++){
-    var div = document.createElement('div');
-    div.className = 'item-block';
-    div.innerHTML =
-      '<label>Item ' + (i+1) + ' — título</label>' +
-      '<input type="text" data-path="benefits.items.' + i + '.title">' +
-      '<label>Item ' + (i+1) + ' — descrição</label>' +
-      '<textarea data-path="benefits.items.' + i + '.desc"></textarea>';
-    benefitItemsEl.appendChild(div);
-  }
-
-  var contraItemsEl = document.getElementById('contraItems');
-  for (var j = 0; j < CONTRA_COUNT; j++){
-    var label = document.createElement('label');
-    label.textContent = 'Item ' + (j+1);
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.setAttribute('data-path', 'contraindicacoes.' + j);
-    contraItemsEl.appendChild(label);
-    contraItemsEl.appendChild(input);
-  }
-
   fetch('/content.json', { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
-      document.querySelectorAll('[data-path]').forEach(function(el){
-        var val = pathGet(data, el.getAttribute('data-path'));
-        if (val !== undefined) el.value = val;
+      document.querySelectorAll('[data-path]').forEach(function(elm){
+        var val = pathGet(data, elm.getAttribute('data-path'));
+        if (val !== undefined) elm.value = val;
       });
       document.getElementById('loadStatus').textContent = 'Conteúdo carregado';
     })
@@ -256,14 +277,18 @@
       document.getElementById('loadStatus').textContent = 'Não achei content.json (site novo?)';
     });
 
+  var savedToken = sessionStorage.getItem('natuDietAdminToken');
+  if (savedToken) document.getElementById('token').value = savedToken;
+
   document.getElementById('saveBtn').addEventListener('click', function(){
     var msg = document.getElementById('msg');
     var token = document.getElementById('token').value;
     if (!token){ msg.textContent = 'Digite a senha primeiro.'; msg.className = 'msg err'; return; }
+    sessionStorage.setItem('natuDietAdminToken', token);
 
     var content = {};
-    document.querySelectorAll('[data-path]').forEach(function(el){
-      pathSet(content, el.getAttribute('data-path'), el.value);
+    document.querySelectorAll('[data-path]').forEach(function(elm){
+      pathSet(content, elm.getAttribute('data-path'), elm.value);
     });
 
     var btn = document.getElementById('saveBtn');
