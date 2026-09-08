@@ -90,7 +90,7 @@
 <header>
   <h1>Natu Diet — painel admin</h1>
   <div style="display:flex;align-items:center;gap:16px;">
-    <a class="view-site" href="/" target="_blank">Ver site ↗</a>
+    <a class="view-site" href="../" target="_blank">Ver site ↗</a>
     <span class="status" id="loadStatus">Carregando…</span>
   </div>
 </header>
@@ -264,7 +264,7 @@
     cur[parts[parts.length - 1]] = value;
   }
 
-  fetch('/content.json', { cache: 'no-store' })
+  fetch('../content.json', { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
       document.querySelectorAll('[data-path]').forEach(function(elm){
@@ -296,7 +296,7 @@
     msg.textContent = 'Salvando…';
     msg.className = 'msg';
 
-    fetch('/api/save', {
+    fetch('../api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: token, content: content })
