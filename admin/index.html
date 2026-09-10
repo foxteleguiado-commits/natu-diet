@@ -507,7 +507,7 @@
     }
   });
 
-  fetch('../content.json', { cache: 'no-store' })
+  fetch('../api/content', { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
       document.querySelectorAll('[data-path]').forEach(function(elm){
@@ -549,7 +549,7 @@
       .then(function(res){
         btn.disabled = false;
         if (res.ok){
-          msg.textContent = 'Salvo! O site atualiza em ~1 minuto.';
+          msg.textContent = 'Salvo! Já está no ar — pode conferir agora.';
           msg.className = 'msg ok';
         } else {
           msg.textContent = 'Erro: ' + (res.body.error || 'falha ao salvar');

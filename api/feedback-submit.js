@@ -2,43 +2,66 @@ function clip(s, max) {
   return String(s == null ? '' : s).trim().slice(0, max);
 }
 
-// Best-effort: append straight to content.json's testimonials array via the GitHub API.
-// Returns true on success, false on any failure (caller falls back to the pending queue).
-async function tryAutoPublish(entry) {
+function backupToGithub(content) {
   const ghToken = process.env.GITHUB_TOKEN;
-  if (!ghToken) return false;
+  if (!ghToken) return;
+  (async () => {
+    try {
+      const owner = process.env.GITHUB_OWNER || 'foxteleguiado-commits';
+      const repo = process.env.GITHUB_REPO || 'natu-diet';
+      const branch = process.env.GITHUB_BRANCH || 'main';
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/content.json`;
+      const headers = {
+        Authorization: `Bearer ${ghToken}`,
+        'User-Agent': 'natu-diet-admin',
+        Accept: 'application/vnd.github+json',
+      };
+      const getResp = await fetch(`${apiUrl}?ref=${branch}`, { headers });
+      if (!getResp.ok) return;
+      const current = await getResp.json();
+      const newContentBase64 = Buffer.from(JSON.stringify(content, null, 2), 'utf-8').toString('base64');
+      await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'Auto-publish 5-star feedback (backup)',
+          content: newContentBase64,
+          sha: current.sha,
+          branch,
+        }),
+      });
+    } catch (err) {
+      // Best-effort backup only.
+    }
+  })();
+}
 
-  const owner = process.env.GITHUB_OWNER || 'foxteleguiado-commits';
-  const repo = process.env.GITHUB_REPO || 'natu-diet';
-  const branch = process.env.GITHUB_BRANCH || 'main';
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/content.json`;
-  const headers = {
-    Authorization: `Bearer ${ghToken}`,
-    'User-Agent': 'natu-diet-admin',
-    Accept: 'application/vnd.github+json',
-  };
+// Appends straight to the site's live content (Redis) so it's visible immediately —
+// no deploy needed. Returns true on success, false on any failure (caller falls back
+// to the pending queue).
+async function tryAutoPublish(entry) {
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (!kvUrl || !kvToken) return false;
+  const headers = { Authorization: `Bearer ${kvToken}` };
 
   try {
-    const getResp = await fetch(`${apiUrl}?ref=${branch}`, { headers });
-    if (!getResp.ok) return false;
-    const current = await getResp.json();
-    const content = JSON.parse(Buffer.from(current.content, 'base64').toString('utf-8'));
+    const getResp = await fetch(`${kvUrl}/get/site_content`, { headers });
+    const getJson = await getResp.json();
+    const content = (getJson && getJson.result) ? JSON.parse(getJson.result) : require('../content.json');
 
     if (!Array.isArray(content.testimonials)) content.testimonials = [];
     content.testimonials.push({ name: entry.name, rating: entry.rating, text: entry.text, image: entry.image || '' });
 
-    const newContentBase64 = Buffer.from(JSON.stringify(content, null, 2), 'utf-8').toString('base64');
-    const putResp = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: 'Auto-publish 5-star feedback',
-        content: newContentBase64,
-        sha: current.sha,
-        branch,
-      }),
+    const setResp = await fetch(`${kvUrl}/set/site_content`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(content),
     });
-    return putResp.ok;
+    if (!setResp.ok) return false;
+
+    backupToGithub(content);
+    return true;
   } catch (err) {
     return false;
   }

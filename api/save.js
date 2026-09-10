@@ -1,3 +1,35 @@
+async function backupToGithub(content) {
+  const ghToken = process.env.GITHUB_TOKEN;
+  if (!ghToken) return;
+  try {
+    const owner = process.env.GITHUB_OWNER || 'foxteleguiado-commits';
+    const repo = process.env.GITHUB_REPO || 'natu-diet';
+    const branch = process.env.GITHUB_BRANCH || 'main';
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/content.json`;
+    const headers = {
+      Authorization: `Bearer ${ghToken}`,
+      'User-Agent': 'natu-diet-admin',
+      Accept: 'application/vnd.github+json',
+    };
+    const getResp = await fetch(`${apiUrl}?ref=${branch}`, { headers });
+    if (!getResp.ok) return;
+    const current = await getResp.json();
+    const newContentBase64 = Buffer.from(JSON.stringify(content, null, 2), 'utf-8').toString('base64');
+    await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Backup content update via admin panel',
+        content: newContentBase64,
+        sha: current.sha,
+        branch,
+      }),
+    });
+  } catch (err) {
+    // Best-effort backup only — the site already reflects the change via the database.
+  }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -16,51 +48,31 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const ghToken = process.env.GITHUB_TOKEN;
-  if (!ghToken) {
-    res.status(500).json({ error: 'GITHUB_TOKEN nao configurado na Vercel' });
+  const kvUrl = process.env.KV_REST_API_URL;
+  const kvToken = process.env.KV_REST_API_TOKEN;
+  if (!kvUrl || !kvToken) {
+    res.status(500).json({ error: 'KV nao configurado' });
     return;
   }
 
-  const owner = process.env.GITHUB_OWNER || 'foxteleguiado-commits';
-  const repo = process.env.GITHUB_REPO || 'natu-diet';
-  const branch = process.env.GITHUB_BRANCH || 'main';
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/content.json`;
-  const headers = {
-    Authorization: `Bearer ${ghToken}`,
-    'User-Agent': 'natu-diet-admin',
-    Accept: 'application/vnd.github+json',
-  };
-
   try {
-    const getResp = await fetch(`${apiUrl}?ref=${branch}`, { headers });
-    if (!getResp.ok) {
-      const detail = await getResp.text();
-      res.status(502).json({ error: 'Falha ao ler content.json atual no GitHub', detail });
-      return;
-    }
-    const current = await getResp.json();
-    const newContentBase64 = Buffer.from(JSON.stringify(content, null, 2), 'utf-8').toString('base64');
-
-    const putResp = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: 'Update site content via admin panel',
-        content: newContentBase64,
-        sha: current.sha,
-        branch,
-      }),
+    const setResp = await fetch(`${kvUrl}/set/site_content`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${kvToken}` },
+      body: JSON.stringify(content),
     });
-
-    if (!putResp.ok) {
-      const detail = await putResp.text();
-      res.status(502).json({ error: 'Falha ao salvar no GitHub', detail });
+    if (!setResp.ok) {
+      const detail = await setResp.text();
+      res.status(502).json({ error: 'Falha ao salvar no banco', detail });
       return;
     }
-
-    res.status(200).json({ ok: true });
   } catch (err) {
-    res.status(500).json({ error: 'Erro interno', detail: String(err) });
+    res.status(500).json({ error: 'Erro ao salvar', detail: String(err) });
+    return;
   }
+
+  // Fire-and-forget: back this up as a real commit, but don't make the admin wait for it.
+  backupToGithub(content);
+
+  res.status(200).json({ ok: true });
 };

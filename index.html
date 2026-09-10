@@ -482,7 +482,7 @@
 
 <script>
 (function(){
-  fetch('./content.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(data){
+  fetch('./api/content', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(data){
     if(!data) return;
     function get(obj, path){
       return path.split('.').reduce(function(o,k){ return (o && o[k] !== undefined) ? o[k] : undefined; }, obj);
