@@ -113,5 +113,12 @@
   "footer": {
     "line": "Multi Ervas · Pedidos via WhatsApp"
   },
-  "testimonials": []
+  "testimonials": [
+    {
+      "name": "NATASHA NORA",
+      "rating": 5,
+      "text": "oi",
+      "image": ""
+    }
+  ]
 }
