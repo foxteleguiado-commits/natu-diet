@@ -78,6 +78,11 @@
   table.logs-table tr:hover td{ background:#f7fbfc; }
   .logs-empty{ padding:24px; text-align:center; color:#8a9aa0; font-size:13px; }
 
+  .pending-item{ border:1px solid #e2edf0; border-radius:10px; padding:12px 14px; margin-top:10px; border-top:1px solid #e2edf0; }
+  .pending-item:first-child{ margin-top:0; }
+  .testi-item{ border:1px solid #e2edf0; border-radius:10px; padding:14px 16px; margin-top:10px; border-top:1px solid #e2edf0; }
+  .testi-item:first-child{ margin-top:0; }
+
   .save-bar{
     position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #d7e6ea;
     padding:12px 20px; display:flex; gap:12px; align-items:center; justify-content:flex-end; z-index:20;
@@ -124,6 +129,7 @@
 <script>
   var CATEGORIES = [
     { id: 'visitas', label: 'Visitas' },
+    { id: 'depoimentos', label: 'Depoimentos' },
     { id: 'marca', label: 'Marca e contato' },
     { id: 'cores', label: 'Cores' },
     { id: 'hero', label: 'Topo do site' },
@@ -162,6 +168,19 @@
       '<div class="logs-table-wrap"><table class="logs-table"><thead><tr>' +
         '<th>Quando</th><th>IP</th><th>Navegador</th><th>Sistema</th><th>Dispositivo</th><th>Página</th>' +
       '</tr></thead><tbody id="logsBody"><tr><td colspan="6" class="logs-empty">Digite a senha e clique em Atualizar.</td></tr></tbody></table></div>',
+
+    depoimentos:
+      '<h2>Depoimentos</h2><p class="desc">Modere o que os clientes enviam e gerencie os depoimentos publicados no site.</p>' +
+      '<div class="card"><strong class="card-title">Texto da seção</strong>' +
+        '<label>Título</label><input type="text" data-path="testimonialsSection.title">' +
+        '<label>Subtítulo</label><textarea data-path="testimonialsSection.sub"></textarea></div>' +
+      '<div class="card"><strong class="card-title">Pendentes de aprovação</strong>' +
+        '<button class="refresh" id="refreshPending">Atualizar pendentes</button>' +
+        '<div id="pendingList"><p class="hint">Clique em "Atualizar pendentes" pra carregar.</p></div></div>' +
+      '<div class="card"><strong class="card-title">Publicados no site</strong>' +
+        '<div id="publishedList"><p class="hint">Carregando…</p></div>' +
+        '<button type="button" class="refresh" id="addTesti" style="margin-top:10px;">+ Adicionar depoimento manualmente</button>' +
+        '<div class="hint">Lembre-se de clicar em "Salvar alterações" lá embaixo pra publicar de verdade.</div></div>',
 
     marca:
       '<h2>Marca e contato</h2><p class="desc">Nome exibido no site e os números/mensagens do WhatsApp.</p>' +
@@ -277,6 +296,7 @@
     document.querySelectorAll('main .cat').forEach(function(s){ s.classList.toggle('active', s.id === 'cat-' + id); });
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
     if (id === 'visitas' && document.getElementById('token').value) loadLogs();
+    if (id === 'depoimentos' && document.getElementById('token').value) loadPending();
   }
 
   function fmtDate(ts){
@@ -340,6 +360,110 @@
     cur[parts[parts.length - 1]] = value;
   }
 
+  function testiCardHtml(idx, t){
+    t = t || {};
+    return '<div class="item-block testi-item">' +
+      '<div class="row"><div><label>Nome</label><input type="text" data-path="testimonials.' + idx + '.name" value="' + escapeHtml(t.name) + '"></div>' +
+      '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" data-path="testimonials.' + idx + '.rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
+      '<label>Depoimento</label><textarea data-path="testimonials.' + idx + '.text">' + escapeHtml(t.text) + '</textarea>' +
+      '<button type="button" class="refresh remove-testi" style="margin-top:8px;color:#a32d2d;">Remover</button>' +
+    '</div>';
+  }
+
+  function renderPublishedInitial(list){
+    var wrap = document.getElementById('publishedList');
+    if (!wrap) return;
+    if (!list || !list.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento publicado ainda.</p>'; return; }
+    wrap.innerHTML = list.map(function(t, i){ return testiCardHtml(i, t); }).join('');
+  }
+
+  function reindexTestimonials(){
+    var wrap = document.getElementById('publishedList');
+    if (!wrap) return;
+    var items = wrap.querySelectorAll('.testi-item');
+    if (!items.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento publicado ainda.</p>'; return; }
+    items.forEach(function(item, i){
+      item.querySelectorAll('[data-path]').forEach(function(elm){
+        var field = elm.getAttribute('data-path').split('.').pop();
+        elm.setAttribute('data-path', 'testimonials.' + i + '.' + field);
+      });
+    });
+  }
+
+  document.addEventListener('click', function(ev){
+    if (ev.target && ev.target.id === 'addTesti'){
+      var wrap = document.getElementById('publishedList');
+      var placeholder = wrap.querySelector('.hint');
+      if (placeholder) wrap.innerHTML = '';
+      var idx = wrap.querySelectorAll('.testi-item').length;
+      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, {}));
+    }
+    if (ev.target && ev.target.classList && ev.target.classList.contains('remove-testi')){
+      ev.target.closest('.testi-item').remove();
+      reindexTestimonials();
+    }
+    if (ev.target && ev.target.id === 'refreshPending'){
+      loadPending();
+    }
+  });
+
+  function pendingCardHtml(e){
+    var n = Math.max(1, Math.min(5, parseInt(e.rating, 10) || 5));
+    var stars = '★★★★★☆☆☆☆'.slice(5 - n, 10 - n);
+    return '<div class="item-block pending-item" data-id="' + escapeHtml(e.id) + '">' +
+      '<div class="row"><div><strong>' + escapeHtml(e.name) + '</strong> <span style="color:#1596c9;">' + stars + '</span></div></div>' +
+      '<p style="font-size:13.5px;color:#163542;margin:8px 0;">' + escapeHtml(e.text) + '</p>' +
+      '<div class="row">' +
+        '<button type="button" class="refresh approve-testi" style="color:#3b6d11;">Aprovar</button>' +
+        '<button type="button" class="refresh reject-testi" style="color:#a32d2d;">Rejeitar</button>' +
+      '</div></div>';
+  }
+
+  function loadPending(){
+    var token = document.getElementById('token').value;
+    var wrap = document.getElementById('pendingList');
+    if (!token){ document.getElementById('msg').textContent = 'Digite a senha primeiro.'; document.getElementById('msg').className = 'msg err'; return; }
+    wrap.innerHTML = '<p class="hint">Carregando…</p>';
+    fetch('../api/feedback-pending?token=' + encodeURIComponent(token))
+      .then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+      .then(function(res){
+        if (!res.ok){ wrap.innerHTML = '<p class="hint">Erro: ' + escapeHtml(res.body.error || 'falha') + '</p>'; return; }
+        var entries = res.body.entries || [];
+        if (!entries.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento pendente.</p>'; return; }
+        wrap.innerHTML = entries.map(pendingCardHtml).join('');
+      })
+      .catch(function(err){ wrap.innerHTML = '<p class="hint">Erro de rede: ' + escapeHtml(err) + '</p>'; });
+  }
+
+  function removePending(id){
+    var token = document.getElementById('token').value;
+    return fetch('../api/feedback-remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, id: id })
+    });
+  }
+
+  document.addEventListener('click', function(ev){
+    var card = ev.target.closest && ev.target.closest('.pending-item');
+    if (!card) return;
+    var id = card.getAttribute('data-id');
+    if (ev.target.classList.contains('approve-testi')){
+      var wrap = document.getElementById('publishedList');
+      var placeholder = wrap.querySelector('.hint');
+      if (placeholder) wrap.innerHTML = '';
+      var idx = wrap.querySelectorAll('.testi-item').length;
+      var name = card.querySelector('strong').textContent;
+      var text = card.querySelector('p').textContent;
+      var starsTxt = card.querySelector('span').textContent;
+      var rating = (starsTxt.match(/★/g) || []).length || 5;
+      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, { name: name, rating: rating, text: text }));
+      removePending(id).then(function(){ card.remove(); });
+    } else if (ev.target.classList.contains('reject-testi')){
+      removePending(id).then(function(){ card.remove(); });
+    }
+  });
+
   fetch('../content.json', { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(data){
@@ -347,6 +471,7 @@
         var val = pathGet(data, elm.getAttribute('data-path'));
         if (val !== undefined) elm.value = val;
       });
+      renderPublishedInitial(data.testimonials);
       document.getElementById('loadStatus').textContent = 'Conteúdo carregado';
     })
     .catch(function(){
