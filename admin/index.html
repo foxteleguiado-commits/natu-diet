@@ -82,6 +82,8 @@
   .pending-item:first-child{ margin-top:0; }
   .testi-item{ border:1px solid #e2edf0; border-radius:10px; padding:14px 16px; margin-top:10px; border-top:1px solid #e2edf0; }
   .testi-item:first-child{ margin-top:0; }
+  .testi-photo-row{ display:flex; align-items:center; gap:12px; }
+  .testi-thumb{ width:64px; height:64px; object-fit:cover; border-radius:8px; border:1px solid #d7e6ea; }
 
   .save-bar{
     position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #d7e6ea;
@@ -362,10 +364,17 @@
 
   function testiCardHtml(idx, t){
     t = t || {};
+    var img = t.image || '';
     return '<div class="item-block testi-item">' +
       '<div class="row"><div><label>Nome</label><input type="text" data-path="testimonials.' + idx + '.name" value="' + escapeHtml(t.name) + '"></div>' +
       '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" data-path="testimonials.' + idx + '.rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
       '<label>Feedback</label><textarea data-path="testimonials.' + idx + '.text">' + escapeHtml(t.text) + '</textarea>' +
+      '<label>Foto</label>' +
+      '<div class="testi-photo-row">' +
+        (img ? '<img class="testi-thumb" src="' + escapeHtml(img) + '">' : '<span class="hint">Sem foto</span>') +
+        '<input type="file" class="testi-upload" accept="image/png,image/jpeg,image/webp,image/gif">' +
+      '</div>' +
+      '<input type="hidden" data-path="testimonials.' + idx + '.image" value="' + escapeHtml(img) + '">' +
       '<button type="button" class="refresh remove-testi" style="margin-top:8px;color:#a32d2d;">Remover</button>' +
     '</div>';
   }
@@ -407,10 +416,43 @@
     }
   });
 
+  document.addEventListener('change', function(ev){
+    if (!ev.target.classList || !ev.target.classList.contains('testi-upload')) return;
+    var file = ev.target.files[0];
+    if (!file) return;
+    var item = ev.target.closest('.testi-item');
+    var hidden = item.querySelector('input[type=hidden][data-path$=".image"]');
+    var row = ev.target.closest('.testi-photo-row');
+    var reader = new FileReader();
+    reader.onload = function(){
+      fetch('../api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: file.name, dataUrl: reader.result })
+      }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+        .then(function(res){
+          if (res.ok){
+            hidden.value = res.body.url;
+            var hint = row.querySelector('.hint');
+            if (hint) hint.remove();
+            var thumb = row.querySelector('img.testi-thumb');
+            if (thumb) thumb.src = res.body.url;
+            else row.insertAdjacentHTML('afterbegin', '<img class="testi-thumb" src="' + res.body.url + '">');
+          } else {
+            alert('Erro ao enviar imagem: ' + (res.body.error || 'falha'));
+          }
+        })
+        .catch(function(err){ alert('Erro de rede: ' + err); });
+    };
+    reader.readAsDataURL(file);
+  });
+
   function pendingCardHtml(e){
     var n = Math.max(1, Math.min(5, parseInt(e.rating, 10) || 5));
     var stars = '★★★★★☆☆☆☆'.slice(5 - n, 10 - n);
-    return '<div class="item-block pending-item" data-id="' + escapeHtml(e.id) + '">' +
+    var img = e.image ? '<img class="testi-thumb" src="' + escapeHtml(e.image) + '" style="margin-bottom:8px;">' : '';
+    return '<div class="item-block pending-item" data-id="' + escapeHtml(e.id) + '" data-image="' + escapeHtml(e.image || '') + '">' +
+      img +
       '<div class="row"><div><strong>' + escapeHtml(e.name) + '</strong> <span style="color:#1596c9;">' + stars + '</span></div></div>' +
       '<p style="font-size:13.5px;color:#163542;margin:8px 0;">' + escapeHtml(e.text) + '</p>' +
       '<div class="row">' +
@@ -457,7 +499,8 @@
       var text = card.querySelector('p').textContent;
       var starsTxt = card.querySelector('span').textContent;
       var rating = (starsTxt.match(/★/g) || []).length || 5;
-      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, { name: name, rating: rating, text: text }));
+      var image = card.getAttribute('data-image') || '';
+      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, { name: name, rating: rating, text: text, image: image }));
       removePending(id).then(function(){ card.remove(); });
     } else if (ev.target.classList.contains('reject-testi')){
       removePending(id).then(function(){ card.remove(); });

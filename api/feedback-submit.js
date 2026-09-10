@@ -37,8 +37,11 @@ module.exports = async (req, res) => {
   const xff = req.headers['x-forwarded-for'] || '';
   const ip = (Array.isArray(xff) ? xff[0] : xff).split(',')[0].trim() || (req.socket && req.socket.remoteAddress) || '';
 
+  let image = clip(body.image, 300);
+  if (image && !/^https:\/\/[a-z0-9.-]+\.public\.blob\.vercel-storage\.com\//i.test(image)) image = '';
+
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const entry = { id, name, rating, text, t: Date.now(), ip };
+  const entry = { id, name, rating, text, image, t: Date.now(), ip };
 
   const headers = { Authorization: `Bearer ${kvToken}` };
 

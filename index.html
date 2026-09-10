@@ -177,6 +177,9 @@
   }
   .testi-form textarea{ min-height:90px; resize:vertical; }
   .testi-form .hp-field{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+  .testi-file-label{ font-size:13px; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px; }
+  .testi-file-label input[type=file]{ font-size:13px; color:var(--ink-soft); }
+  .testi-card .photo{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:10px; margin-bottom:12px; }
   .testi-form button{
     align-self:flex-start; background:var(--brand-blue); color:var(--paper-raised); border:none; font-weight:800;
     font-size:14.5px; padding:12px 24px; border-radius:999px; cursor:pointer;
@@ -388,6 +391,9 @@
           <option value="1">★☆☆☆☆ Ruim</option>
         </select>
         <textarea name="text" placeholder="Conte como foi a sua experiência" maxlength="500" required></textarea>
+        <label class="testi-file-label">Foto (opcional)
+          <input type="file" name="image" accept="image/png,image/jpeg,image/webp,image/gif">
+        </label>
         <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off">
         <button type="submit">Enviar feedback</button>
         <span class="testi-msg" id="testiMsg"></span>
@@ -501,7 +507,8 @@
         var n = Math.max(1, Math.min(5, parseInt(t.rating,10) || 5));
         var stars = '★★★★★☆☆☆☆'.slice(5 - n, 10 - n);
         var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
-        return '<div class="testi-card"><div class="stars">' + stars + '</div><div class="txt">' + esc(t.text) + '</div><div class="who">' + esc(t.name) + '</div></div>';
+        var photo = t.image ? '<img class="photo" src="' + esc(t.image) + '" alt="Foto enviada por ' + esc(t.name) + '" loading="lazy">' : '';
+        return '<div class="testi-card">' + photo + '<div class="stars">' + stars + '</div><div class="txt">' + esc(t.text) + '</div><div class="who">' + esc(t.name) + '</div></div>';
       }).join('');
     }
   }).catch(function(){});
@@ -511,18 +518,47 @@
 (function(){
   var form = document.getElementById('testiForm');
   if(!form) return;
+  function fileToDataUrl(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(){ resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   form.addEventListener('submit', function(ev){
     ev.preventDefault();
     var msg = document.getElementById('testiMsg');
     var fd = new FormData(form);
-    var payload = { name: fd.get('name'), rating: fd.get('rating'), text: fd.get('text'), website: fd.get('website') };
-    msg.textContent = 'Enviando…'; msg.className = 'testi-msg';
-    fetch('./api/feedback-submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+    var imageFile = fd.get('image');
+    var submitBtn = form.querySelector('button[type=submit]');
+
+    var uploadStep = Promise.resolve('');
+    if(imageFile && imageFile.size > 0){
+      msg.textContent = 'Enviando foto…'; msg.className = 'testi-msg';
+      uploadStep = fileToDataUrl(imageFile).then(function(dataUrl){
+        return fetch('./api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: imageFile.name, dataUrl: dataUrl })
+        }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+          .then(function(res){ if(!res.ok) throw new Error(res.body.error || 'falha no upload'); return res.body.url; });
+      });
+    }
+
+    submitBtn.disabled = true;
+    uploadStep.then(function(imageUrl){
+      var payload = { name: fd.get('name'), rating: fd.get('rating'), text: fd.get('text'), website: fd.get('website'), image: imageUrl };
+      msg.textContent = 'Enviando…'; msg.className = 'testi-msg';
+      return fetch('./api/feedback-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); });
+    })
       .then(function(res){
+        submitBtn.disabled = false;
         if(res.ok){
           msg.textContent = 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
           msg.className = 'testi-msg ok';
@@ -533,7 +569,8 @@
         }
       })
       .catch(function(err){
-        msg.textContent = 'Erro de rede: ' + err;
+        submitBtn.disabled = false;
+        msg.textContent = 'Erro: ' + err.message;
         msg.className = 'testi-msg err';
       });
   });
