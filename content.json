@@ -113,12 +113,5 @@
   "footer": {
     "line": "Multi Ervas · Pedidos via WhatsApp"
   },
-  "testimonials": [
-    {
-      "name": "Teste Auto-Publish",
-      "rating": 5,
-      "text": "Este e um teste automatico, pode remover.",
-      "image": ""
-    }
-  ]
+  "testimonials": []
 }
