@@ -129,7 +129,7 @@
 <script>
   var CATEGORIES = [
     { id: 'visitas', label: 'Visitas' },
-    { id: 'depoimentos', label: 'Depoimentos' },
+    { id: 'depoimentos', label: 'Feedback' },
     { id: 'marca', label: 'Marca e contato' },
     { id: 'cores', label: 'Cores' },
     { id: 'hero', label: 'Topo do site' },
@@ -170,7 +170,7 @@
       '</tr></thead><tbody id="logsBody"><tr><td colspan="6" class="logs-empty">Digite a senha e clique em Atualizar.</td></tr></tbody></table></div>',
 
     depoimentos:
-      '<h2>Depoimentos</h2><p class="desc">Modere o que os clientes enviam e gerencie os depoimentos publicados no site.</p>' +
+      '<h2>Feedback</h2><p class="desc">Modere o que os clientes enviam e gerencie o feedback publicado no site.</p>' +
       '<div class="card"><strong class="card-title">Texto da seção</strong>' +
         '<label>Título</label><input type="text" data-path="testimonialsSection.title">' +
         '<label>Subtítulo</label><textarea data-path="testimonialsSection.sub"></textarea></div>' +
@@ -179,7 +179,7 @@
         '<div id="pendingList"><p class="hint">Clique em "Atualizar pendentes" pra carregar.</p></div></div>' +
       '<div class="card"><strong class="card-title">Publicados no site</strong>' +
         '<div id="publishedList"><p class="hint">Carregando…</p></div>' +
-        '<button type="button" class="refresh" id="addTesti" style="margin-top:10px;">+ Adicionar depoimento manualmente</button>' +
+        '<button type="button" class="refresh" id="addTesti" style="margin-top:10px;">+ Adicionar feedback manualmente</button>' +
         '<div class="hint">Lembre-se de clicar em "Salvar alterações" lá embaixo pra publicar de verdade.</div></div>',
 
     marca:
@@ -365,7 +365,7 @@
     return '<div class="item-block testi-item">' +
       '<div class="row"><div><label>Nome</label><input type="text" data-path="testimonials.' + idx + '.name" value="' + escapeHtml(t.name) + '"></div>' +
       '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" data-path="testimonials.' + idx + '.rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
-      '<label>Depoimento</label><textarea data-path="testimonials.' + idx + '.text">' + escapeHtml(t.text) + '</textarea>' +
+      '<label>Feedback</label><textarea data-path="testimonials.' + idx + '.text">' + escapeHtml(t.text) + '</textarea>' +
       '<button type="button" class="refresh remove-testi" style="margin-top:8px;color:#a32d2d;">Remover</button>' +
     '</div>';
   }
@@ -373,7 +373,7 @@
   function renderPublishedInitial(list){
     var wrap = document.getElementById('publishedList');
     if (!wrap) return;
-    if (!list || !list.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento publicado ainda.</p>'; return; }
+    if (!list || !list.length){ wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>'; return; }
     wrap.innerHTML = list.map(function(t, i){ return testiCardHtml(i, t); }).join('');
   }
 
@@ -381,7 +381,7 @@
     var wrap = document.getElementById('publishedList');
     if (!wrap) return;
     var items = wrap.querySelectorAll('.testi-item');
-    if (!items.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento publicado ainda.</p>'; return; }
+    if (!items.length){ wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>'; return; }
     items.forEach(function(item, i){
       item.querySelectorAll('[data-path]').forEach(function(elm){
         var field = elm.getAttribute('data-path').split('.').pop();
@@ -429,7 +429,7 @@
       .then(function(res){
         if (!res.ok){ wrap.innerHTML = '<p class="hint">Erro: ' + escapeHtml(res.body.error || 'falha') + '</p>'; return; }
         var entries = res.body.entries || [];
-        if (!entries.length){ wrap.innerHTML = '<p class="hint">Nenhum depoimento pendente.</p>'; return; }
+        if (!entries.length){ wrap.innerHTML = '<p class="hint">Nenhum feedback pendente.</p>'; return; }
         wrap.innerHTML = entries.map(pendingCardHtml).join('');
       })
       .catch(function(err){ wrap.innerHTML = '<p class="hint">Erro de rede: ' + escapeHtml(err) + '</p>'; });

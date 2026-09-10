@@ -370,14 +370,14 @@
 <section class="pad" id="depoimentos">
   <div class="wrap">
     <h2 class="sec-title" data-ck="testimonialsSection.title">O que dizem os clientes</h2>
-    <p class="sec-sub" data-ck="testimonialsSection.sub">Depoimentos de quem já usa o Natu Diet na rotina.</p>
+    <p class="sec-sub" data-ck="testimonialsSection.sub">Feedback de quem já usa o Natu Diet na rotina.</p>
 
     <div class="testi-grid" id="testiGrid">
-      <div class="testi-empty" id="testiEmpty">Ainda não temos depoimentos publicados.</div>
+      <div class="testi-empty" id="testiEmpty">Ainda não temos feedback publicado ainda.</div>
     </div>
 
     <div class="testi-form-wrap">
-      <h3>Deixe o seu depoimento</h3>
+      <h3>Deixe o seu feedback</h3>
       <form class="testi-form" id="testiForm">
         <input type="text" name="name" placeholder="Seu nome" maxlength="60" required>
         <select name="rating">
@@ -389,7 +389,7 @@
         </select>
         <textarea name="text" placeholder="Conte como foi a sua experiência" maxlength="500" required></textarea>
         <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off">
-        <button type="submit">Enviar depoimento</button>
+        <button type="submit">Enviar feedback</button>
         <span class="testi-msg" id="testiMsg"></span>
       </form>
     </div>
@@ -524,7 +524,7 @@
     }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
       .then(function(res){
         if(res.ok){
-          msg.textContent = 'Obrigado! Seu depoimento foi enviado e será avaliado antes de aparecer no site.';
+          msg.textContent = 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
           msg.className = 'testi-msg ok';
           form.reset();
         } else {
