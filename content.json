@@ -1,4 +1,8 @@
 {
+  "testimonialsSection": {
+    "title": "O que dizem os clientes",
+    "sub": "Feedback de quem já usa o Natu Diet na rotina."
+  },
   "brand": {
     "name": "Natu Diet",
     "tag": "Composto · Multi Ervas"
@@ -104,11 +108,6 @@
     "Não ingerir bebidas alcoólicas durante o uso",
     "Não associar com outros medicamentos sem orientação"
   ],
-  "testimonialsSection": {
-    "title": "O que dizem os clientes",
-    "sub": "Feedback de quem já usa o Natu Diet na rotina."
-  },
-  "testimonials": [],
   "autenticidade": "Todo frasco original possui selo holográfico Multi Ervas inviolável, com número de fabricação, validade e lote gravados no próprio frasco. Em caso de dúvida sobre a procedência, confirme diretamente pelo WhatsApp antes da compra.",
   "fine": "Composto Natu Diet · Multi Ervas — produto fitoterápico, com responsabilidade farmacêutica.",
   "footer": {
