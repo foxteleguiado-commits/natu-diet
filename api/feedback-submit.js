@@ -2,6 +2,48 @@ function clip(s, max) {
   return String(s == null ? '' : s).trim().slice(0, max);
 }
 
+// Best-effort: append straight to content.json's testimonials array via the GitHub API.
+// Returns true on success, false on any failure (caller falls back to the pending queue).
+async function tryAutoPublish(entry) {
+  const ghToken = process.env.GITHUB_TOKEN;
+  if (!ghToken) return false;
+
+  const owner = process.env.GITHUB_OWNER || 'foxteleguiado-commits';
+  const repo = process.env.GITHUB_REPO || 'natu-diet';
+  const branch = process.env.GITHUB_BRANCH || 'main';
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/content.json`;
+  const headers = {
+    Authorization: `Bearer ${ghToken}`,
+    'User-Agent': 'natu-diet-admin',
+    Accept: 'application/vnd.github+json',
+  };
+
+  try {
+    const getResp = await fetch(`${apiUrl}?ref=${branch}`, { headers });
+    if (!getResp.ok) return false;
+    const current = await getResp.json();
+    const content = JSON.parse(Buffer.from(current.content, 'base64').toString('utf-8'));
+
+    if (!Array.isArray(content.testimonials)) content.testimonials = [];
+    content.testimonials.push({ name: entry.name, rating: entry.rating, text: entry.text, image: entry.image || '' });
+
+    const newContentBase64 = Buffer.from(JSON.stringify(content, null, 2), 'utf-8').toString('base64');
+    const putResp = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Auto-publish 5-star feedback',
+        content: newContentBase64,
+        sha: current.sha,
+        branch,
+      }),
+    });
+    return putResp.ok;
+  } catch (err) {
+    return false;
+  }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -42,6 +84,16 @@ module.exports = async (req, res) => {
 
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   const entry = { id, name, rating, text, image, t: Date.now(), ip };
+
+  // 5-star feedback publishes immediately, skipping the moderation queue.
+  if (rating === 5) {
+    const published = await tryAutoPublish(entry);
+    if (published) {
+      res.status(200).json({ ok: true, published: true });
+      return;
+    }
+    // Fall through to the pending queue if the auto-publish attempt failed for any reason.
+  }
 
   const headers = { Authorization: `Bearer ${kvToken}` };
 

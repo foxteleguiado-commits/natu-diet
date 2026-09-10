@@ -560,7 +560,9 @@
       .then(function(res){
         submitBtn.disabled = false;
         if(res.ok){
-          msg.textContent = 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
+          msg.textContent = res.body.published
+            ? 'Obrigado! Seu feedback de 5 estrelas já está publicado no site.'
+            : 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
           msg.className = 'testi-msg ok';
           form.reset();
         } else {
