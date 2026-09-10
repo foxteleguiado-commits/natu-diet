@@ -177,8 +177,20 @@
   }
   .testi-form textarea{ min-height:90px; resize:vertical; }
   .testi-form .hp-field{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
-  .testi-file-label{ font-size:13px; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px; }
-  .testi-file-label input[type=file]{ font-size:13px; color:var(--ink-soft); }
+  .testi-file-field{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .testi-file-btn{
+    position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px;
+    background:transparent; border:1.5px solid var(--line-strong); color:var(--ink);
+    font-family:inherit; font-weight:700; font-size:13.5px; padding:10px 18px; border-radius:999px; cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .testi-file-btn::before{ content:'📷'; font-size:14px; }
+  .testi-file-btn:hover{ border-color:var(--brand-blue); background:color-mix(in srgb, var(--brand-blue) 8%, transparent); }
+  .testi-file-btn input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%;
+  }
+  .testi-file-name{ font-size:13px; color:var(--ink-soft); }
+  .testi-file-preview{ width:44px; height:44px; border-radius:8px; object-fit:cover; display:none; border:1px solid var(--line); }
   .testi-card .photo{ width:100%; aspect-ratio:16/10; object-fit:cover; border-radius:10px; margin-bottom:12px; }
   .testi-form button{
     align-self:flex-start; background:var(--brand-blue); color:var(--paper-raised); border:none; font-weight:800;
@@ -391,9 +403,14 @@
           <option value="1">★☆☆☆☆ Ruim</option>
         </select>
         <textarea name="text" placeholder="Conte como foi a sua experiência" maxlength="500" required></textarea>
-        <label class="testi-file-label">Foto (opcional)
-          <input type="file" name="image" accept="image/png,image/jpeg,image/webp,image/gif">
-        </label>
+        <div class="testi-file-field">
+          <label class="testi-file-btn">
+            Escolher foto
+            <input type="file" id="testiImageInput" name="image" accept="image/png,image/jpeg,image/webp,image/gif">
+          </label>
+          <img class="testi-file-preview" id="testiFilePreview" alt="">
+          <span class="testi-file-name" id="testiFileName">Foto (opcional)</span>
+        </div>
         <input type="text" name="website" class="hp-field" tabindex="-1" autocomplete="off">
         <button type="submit">Enviar feedback</button>
         <span class="testi-msg" id="testiMsg"></span>
@@ -518,6 +535,21 @@
 (function(){
   var form = document.getElementById('testiForm');
   if(!form) return;
+
+  var imageInput = document.getElementById('testiImageInput');
+  var fileNameEl = document.getElementById('testiFileName');
+  var previewEl = document.getElementById('testiFilePreview');
+  if(imageInput){
+    imageInput.addEventListener('change', function(){
+      var file = imageInput.files[0];
+      if(!file){ fileNameEl.textContent = 'Foto (opcional)'; previewEl.style.display = 'none'; return; }
+      fileNameEl.textContent = file.name;
+      var reader = new FileReader();
+      reader.onload = function(){ previewEl.src = reader.result; previewEl.style.display = 'block'; };
+      reader.readAsDataURL(file);
+    });
+  }
+
   function fileToDataUrl(file){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
@@ -565,6 +597,8 @@
             : 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
           msg.className = 'testi-msg ok';
           form.reset();
+          if(fileNameEl) fileNameEl.textContent = 'Foto (opcional)';
+          if(previewEl) previewEl.style.display = 'none';
         } else {
           msg.textContent = 'Erro: ' + (res.body.error || 'não foi possível enviar');
           msg.className = 'testi-msg err';
