@@ -112,5 +112,13 @@
   "fine": "Composto Natu Diet · Multi Ervas — produto fitoterápico, com responsabilidade farmacêutica.",
   "footer": {
     "line": "Multi Ervas · Pedidos via WhatsApp"
-  }
+  },
+  "testimonials": [
+    {
+      "name": "Teste Auto-Publish",
+      "rating": 5,
+      "text": "Este e um teste automatico, pode remover.",
+      "image": ""
+    }
+  ]
 }
