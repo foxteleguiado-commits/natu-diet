@@ -540,7 +540,10 @@
       var msg = msgs[el.getAttribute('data-wa')];
       if(phone && msg) el.setAttribute('href', 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg));
     });
-    if(Array.isArray(data.testimonials) && data.testimonials.length){
+    var validTestimonials = (Array.isArray(data.testimonials) ? data.testimonials : []).filter(function(t){
+      return t && ((t.name && t.name.trim()) || (t.text && t.text.trim()));
+    });
+    if(validTestimonials.length){
       var track = document.getElementById('testiTrack');
       var dotsWrap = document.getElementById('testiDots');
       var carousel = document.getElementById('testiCarousel');
@@ -548,7 +551,7 @@
       var navEl = document.getElementById('testiNav');
       var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
 
-      track.innerHTML = data.testimonials.map(function(t){
+      track.innerHTML = validTestimonials.map(function(t){
         var n = Math.max(1, Math.min(5, parseInt(t.rating,10) || 5));
         var stars = '★★★★★☆☆☆☆'.slice(5 - n, 10 - n);
         var photo = t.image ? '<img class="photo" src="' + esc(t.image) + '" alt="Foto enviada por ' + esc(t.name) + '" loading="lazy">' : '';
@@ -557,7 +560,7 @@
           '</div></div>';
       }).join('');
 
-      var count = data.testimonials.length;
+      var count = validTestimonials.length;
       dotsWrap.innerHTML = '';
       for(var i = 0; i < count; i++){
         (function(idx){
