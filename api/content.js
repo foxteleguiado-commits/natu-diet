@@ -33,8 +33,20 @@ module.exports = async (req, res) => {
       } else {
         // One-time migration from the old embedded field, the first time this runs.
         testimonials = siteContent.testimonials || fallback.testimonials || [];
-        kvSet(kvUrl, kvToken, 'testimonials_list', JSON.stringify(testimonials)).catch(() => {});
       }
+
+      // Backfill ids for any legacy entries (migrated before ids existed) and persist
+      // the fix, so editing/removing them later targets the right entry instead of
+      // silently creating a duplicate.
+      let needsSave = !rawTesti;
+      testimonials = testimonials.map((t) => {
+        if (t && !t.id) {
+          needsSave = true;
+          return Object.assign({}, t, { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8) });
+        }
+        return t;
+      });
+      if (needsSave) kvSet(kvUrl, kvToken, 'testimonials_list', JSON.stringify(testimonials)).catch(() => {});
     } catch (err) {
       // keep whatever testimonials value we already had
     }
