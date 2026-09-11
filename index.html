@@ -186,11 +186,19 @@
   .testi-form-wrap{ margin-top:48px; padding-top:40px; border-top:1px solid var(--line); max-width:560px; }
   .testi-form-wrap h3{ font-size:18px; font-weight:800; }
   .testi-form{ margin-top:16px; display:flex; flex-direction:column; gap:12px; }
-  .testi-form input[type=text], .testi-form select, .testi-form textarea{
+  .testi-form input[type=text], .testi-form textarea{
     width:100%; padding:11px 13px; border:1px solid var(--line-strong); border-radius:10px; font-family:inherit; font-size:14px; color:var(--ink); background:var(--paper-raised);
   }
   .testi-form textarea{ min-height:90px; resize:vertical; }
   .testi-form .hp-field{ position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+  .testi-rating{ display:flex; align-items:center; gap:4px; }
+  .testi-rating .star{
+    background:none; border:none; padding:0; margin:0; font-size:26px; line-height:1; cursor:pointer;
+    color:var(--line-strong); transition:color .12s ease, transform .1s ease;
+  }
+  .testi-rating .star:hover{ transform:scale(1.12); }
+  .testi-rating .star.filled{ color:var(--brand-blue); }
+  .testi-rating-label{ margin-left:8px; font-size:13px; font-weight:700; color:var(--ink-soft); }
   .testi-file-field{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
   .testi-file-btn{
     position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:8px;
@@ -409,13 +417,15 @@
       <h3>Deixe o seu feedback</h3>
       <form class="testi-form" id="testiForm">
         <input type="text" name="name" placeholder="Seu nome" maxlength="60" required>
-        <select name="rating">
-          <option value="5">★★★★★ Excelente</option>
-          <option value="4">★★★★☆ Muito bom</option>
-          <option value="3">★★★☆☆ Bom</option>
-          <option value="2">★★☆☆☆ Regular</option>
-          <option value="1">★☆☆☆☆ Ruim</option>
-        </select>
+        <div class="testi-rating" id="testiRating">
+          <button type="button" class="star" data-val="1" aria-label="1 estrela">★</button>
+          <button type="button" class="star" data-val="2" aria-label="2 estrelas">★</button>
+          <button type="button" class="star" data-val="3" aria-label="3 estrelas">★</button>
+          <button type="button" class="star" data-val="4" aria-label="4 estrelas">★</button>
+          <button type="button" class="star" data-val="5" aria-label="5 estrelas">★</button>
+          <span class="testi-rating-label" id="testiRatingLabel">Excelente</span>
+        </div>
+        <input type="hidden" name="rating" id="testiRatingInput" value="5">
         <textarea name="text" placeholder="Conte como foi a sua experiência" maxlength="500" required></textarea>
         <div class="testi-file-field">
           <label class="testi-file-btn">
@@ -571,6 +581,24 @@
   var form = document.getElementById('testiForm');
   if(!form) return;
 
+  var RATING_LABELS = { 1: 'Ruim', 2: 'Regular', 3: 'Bom', 4: 'Muito bom', 5: 'Excelente' };
+  var ratingInput = document.getElementById('testiRatingInput');
+  var ratingLabel = document.getElementById('testiRatingLabel');
+  var stars = document.querySelectorAll('#testiRating .star');
+  function paintStars(val){
+    stars.forEach(function(s){ s.classList.toggle('filled', parseInt(s.getAttribute('data-val'), 10) <= val); });
+    if(ratingLabel) ratingLabel.textContent = RATING_LABELS[val] || '';
+  }
+  stars.forEach(function(s){
+    var val = parseInt(s.getAttribute('data-val'), 10);
+    s.addEventListener('click', function(){ ratingInput.value = val; paintStars(val); });
+    s.addEventListener('mouseenter', function(){ paintStars(val); });
+  });
+  document.getElementById('testiRating').addEventListener('mouseleave', function(){
+    paintStars(parseInt(ratingInput.value, 10) || 5);
+  });
+  paintStars(parseInt(ratingInput.value, 10) || 5);
+
   var imageInput = document.getElementById('testiImageInput');
   var fileNameEl = document.getElementById('testiFileName');
   var previewEl = document.getElementById('testiFilePreview');
@@ -632,6 +660,7 @@
             : 'Obrigado! Seu feedback foi enviado e será avaliado antes de aparecer no site.';
           msg.className = 'testi-msg ok';
           form.reset();
+          paintStars(5);
           if(fileNameEl) fileNameEl.textContent = 'Foto (opcional)';
           if(previewEl) previewEl.style.display = 'none';
         } else {
