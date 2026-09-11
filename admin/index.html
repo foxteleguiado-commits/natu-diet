@@ -164,6 +164,32 @@
   .msg{ font-size:12.5px; font-weight:700; margin-right:auto; }
   .msg.ok{ color:var(--green); } .msg.err{ color:var(--red); }
 
+  body:not(.authed) header, body:not(.authed) .shell, body:not(.authed) .save-bar{ display:none; }
+  #loginScreen{
+    position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    background:var(--bg); padding:20px;
+  }
+  body.authed #loginScreen{ display:none; }
+  .login-card{
+    width:100%; max-width:340px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:32px 28px; box-shadow:var(--shadow-pop); text-align:center;
+  }
+  .login-card h1{ font-size:19px; margin:0 0 6px; font-weight:900; color:var(--text); }
+  .login-card > p.login-sub{ font-size:12.5px; color:var(--text-soft); margin:0 0 24px; }
+  .login-card label{ text-align:left; }
+  .login-remember{
+    display:flex !important; align-items:center; gap:8px; font-size:12.5px !important; font-weight:600; color:var(--text-soft);
+    text-transform:none !important; letter-spacing:0 !important; margin:16px 0 20px !important; cursor:pointer;
+  }
+  .login-remember input{ width:auto; }
+  .login-card button.save{ width:100%; }
+  .login-error{ font-size:12.5px; color:var(--red); font-weight:700; margin:14px 0 0; min-height:16px; }
+  .logout-btn{
+    background:none; border:1px solid var(--border-strong); color:var(--text-soft); font-size:12px; font-weight:700;
+    padding:7px 13px; border-radius:8px; cursor:pointer; font-family:inherit; transition:color .12s ease, border-color .12s ease;
+  }
+  .logout-btn:hover{ color:var(--text); border-color:var(--accent-strong); }
+
   @media (max-width:760px){
     .shell{ flex-direction:column; }
     nav.sidebar{ width:100%; height:auto; position:static; display:flex; overflow-x:auto; padding:10px; gap:4px; }
@@ -175,10 +201,23 @@
 </style>
 </head>
 <body>
+<div id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <h1>Natu Diet</h1>
+    <p class="login-sub">Painel administrativo — acesso restrito.</p>
+    <label for="loginPassword">Senha</label>
+    <input type="password" id="loginPassword" autocomplete="current-password" placeholder="Digite a senha">
+    <label class="login-remember"><input type="checkbox" id="loginRemember" checked> Manter conectado neste dispositivo</label>
+    <button type="submit" class="save" id="loginBtn">Entrar</button>
+    <p class="login-error" id="loginError"></p>
+  </form>
+</div>
+
 <header>
   <h1>Natu Diet — painel admin</h1>
   <div style="display:flex;align-items:center;gap:16px;">
     <a class="view-site" href="../" target="_blank">Ver site ↗</a>
+    <button type="button" class="logout-btn" id="logoutBtn">Sair</button>
     <span class="status" id="loadStatus">Carregando…</span>
   </div>
 </header>
@@ -190,11 +229,11 @@
 
 <div class="save-bar">
   <span class="msg" id="msg"></span>
-  <input type="password" id="token" placeholder="Senha do admin">
   <button class="save" id="saveBtn">Salvar alterações</button>
 </div>
 
 <script>
+  var ADMIN_TOKEN = '';
   var CATEGORIES = [
     { id: 'visitas', label: 'Visitas' },
     { id: 'depoimentos', label: 'Feedback' },
@@ -363,8 +402,8 @@
     document.querySelectorAll('nav.sidebar button').forEach(function(b){ b.classList.toggle('active', b.dataset.cat === id); });
     document.querySelectorAll('main .cat').forEach(function(s){ s.classList.toggle('active', s.id === 'cat-' + id); });
     window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
-    if (id === 'visitas' && document.getElementById('token').value) loadLogs();
-    if (id === 'depoimentos' && document.getElementById('token').value) loadPending();
+    if (id === 'visitas') loadLogs();
+    if (id === 'depoimentos') loadPending();
   }
 
   function fmtDate(ts){
@@ -379,15 +418,10 @@
   }
 
   function loadLogs(){
-    var token = document.getElementById('token').value;
     var body = document.getElementById('logsBody');
-    if (!token){
-      document.getElementById('msg').textContent = 'Digite a senha primeiro.';
-      document.getElementById('msg').className = 'msg err';
-      return;
-    }
+    if (!ADMIN_TOKEN) return;
     body.innerHTML = '<tr><td colspan="6" class="logs-empty">Carregando…</td></tr>';
-    fetch('../api/logs?token=' + encodeURIComponent(token))
+    fetch('../api/logs?token=' + encodeURIComponent(ADMIN_TOKEN))
       .then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
       .then(function(res){
         if (!res.ok){
@@ -457,11 +491,9 @@
   }
 
   function saveTestimonial(item){
-    var token = document.getElementById('token').value;
     var msgEl = item.querySelector('.ti-msg');
-    if (!token){ msgEl.textContent = 'Digite a senha primeiro.'; msgEl.style.color = 'var(--red)'; return; }
     var payload = {
-      token: token,
+      token: ADMIN_TOKEN,
       id: item.getAttribute('data-id') || undefined,
       name: item.querySelector('.ti-name').value,
       rating: item.querySelector('.ti-rating').value,
@@ -488,12 +520,10 @@
   function removeTestimonial(item){
     var id = item.getAttribute('data-id');
     if (!id){ item.remove(); checkPublishedEmpty(); return; }
-    var token = document.getElementById('token').value;
-    if (!token){ item.querySelector('.ti-msg').textContent = 'Digite a senha primeiro.'; return; }
     fetch('../api/testimonial-delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, id: id })
+      body: JSON.stringify({ token: ADMIN_TOKEN, id: id })
     }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
       .then(function(res){
         if (res.ok){ item.remove(); checkPublishedEmpty(); }
@@ -571,11 +601,10 @@
   }
 
   function loadPending(){
-    var token = document.getElementById('token').value;
     var wrap = document.getElementById('pendingList');
-    if (!token){ document.getElementById('msg').textContent = 'Digite a senha primeiro.'; document.getElementById('msg').className = 'msg err'; return; }
+    if (!ADMIN_TOKEN) return;
     wrap.innerHTML = '<p class="hint">Carregando…</p>';
-    fetch('../api/feedback-pending?token=' + encodeURIComponent(token))
+    fetch('../api/feedback-pending?token=' + encodeURIComponent(ADMIN_TOKEN))
       .then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
       .then(function(res){
         if (!res.ok){ wrap.innerHTML = '<p class="hint">Erro: ' + escapeHtml(res.body.error || 'falha') + '</p>'; return; }
@@ -587,11 +616,10 @@
   }
 
   function removePending(id){
-    var token = document.getElementById('token').value;
     return fetch('../api/feedback-remove', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, id: id })
+      body: JSON.stringify({ token: ADMIN_TOKEN, id: id })
     });
   }
 
@@ -600,8 +628,6 @@
     if (!card) return;
     var id = card.getAttribute('data-id');
     if (ev.target.classList.contains('approve-testi')){
-      var token = document.getElementById('token').value;
-      if (!token){ document.getElementById('msg').textContent = 'Digite a senha primeiro.'; document.getElementById('msg').className = 'msg err'; return; }
       var name = card.querySelector('strong').textContent;
       var text = card.querySelector('p').textContent;
       var starsTxt = card.querySelector('span').textContent;
@@ -610,7 +636,7 @@
       fetch('../api/testimonial-upsert', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: token, name: name, rating: rating, text: text, image: image })
+        body: JSON.stringify({ token: ADMIN_TOKEN, name: name, rating: rating, text: text, image: image })
       }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
         .then(function(res){
           if (!res.ok){ alert('Erro ao aprovar: ' + (res.body.error || 'falha')); return; }
@@ -626,28 +652,74 @@
     }
   });
 
-  fetch('../api/content', { cache: 'no-store' })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      document.querySelectorAll('[data-path]').forEach(function(elm){
-        var val = pathGet(data, elm.getAttribute('data-path'));
-        if (val !== undefined) elm.value = val;
+  function loadContent(){
+    fetch('../api/content', { cache: 'no-store' })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        document.querySelectorAll('[data-path]').forEach(function(elm){
+          var val = pathGet(data, elm.getAttribute('data-path'));
+          if (val !== undefined) elm.value = val;
+        });
+        renderPublishedInitial(data.testimonials);
+        document.getElementById('loadStatus').textContent = 'Conteúdo carregado';
+      })
+      .catch(function(){
+        document.getElementById('loadStatus').textContent = 'Não achei content.json (site novo?)';
       });
-      renderPublishedInitial(data.testimonials);
-      document.getElementById('loadStatus').textContent = 'Conteúdo carregado';
-    })
-    .catch(function(){
-      document.getElementById('loadStatus').textContent = 'Não achei content.json (site novo?)';
-    });
+  }
 
-  var savedToken = sessionStorage.getItem('natuDietAdminToken');
-  if (savedToken) document.getElementById('token').value = savedToken;
+  function verifyToken(token){
+    return fetch('../api/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token })
+    }).then(function(r){ return r.ok; }).catch(function(){ return false; });
+  }
+
+  function enterAdmin(token){
+    ADMIN_TOKEN = token;
+    document.body.classList.add('authed');
+    loadContent();
+  }
+
+  (function autoLogin(){
+    var saved = localStorage.getItem('natuDietAdminToken') || sessionStorage.getItem('natuDietAdminToken');
+    if (!saved) return;
+    verifyToken(saved).then(function(ok){
+      if (ok) enterAdmin(saved);
+      else {
+        localStorage.removeItem('natuDietAdminToken');
+        sessionStorage.removeItem('natuDietAdminToken');
+      }
+    });
+  })();
+
+  document.getElementById('loginForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var pass = document.getElementById('loginPassword').value;
+    var remember = document.getElementById('loginRemember').checked;
+    var errEl = document.getElementById('loginError');
+    var btn = document.getElementById('loginBtn');
+    if (!pass){ errEl.textContent = 'Digite a senha.'; return; }
+    errEl.textContent = '';
+    btn.disabled = true; btn.textContent = 'Entrando…';
+    verifyToken(pass).then(function(ok){
+      btn.disabled = false; btn.textContent = 'Entrar';
+      if (!ok){ errEl.textContent = 'Senha incorreta.'; return; }
+      if (remember) localStorage.setItem('natuDietAdminToken', pass);
+      else sessionStorage.setItem('natuDietAdminToken', pass);
+      enterAdmin(pass);
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', function(){
+    localStorage.removeItem('natuDietAdminToken');
+    sessionStorage.removeItem('natuDietAdminToken');
+    location.reload();
+  });
 
   document.getElementById('saveBtn').addEventListener('click', function(){
     var msg = document.getElementById('msg');
-    var token = document.getElementById('token').value;
-    if (!token){ msg.textContent = 'Digite a senha primeiro.'; msg.className = 'msg err'; return; }
-    sessionStorage.setItem('natuDietAdminToken', token);
 
     var content = {};
     document.querySelectorAll('[data-path]').forEach(function(elm){
@@ -662,7 +734,7 @@
     fetch('../api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token, content: content })
+      body: JSON.stringify({ token: ADMIN_TOKEN, content: content })
     })
       .then(function(r){ return r.json().then(function(body){ return { ok: r.ok, body: body }; }); })
       .then(function(res){
