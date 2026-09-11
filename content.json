@@ -5,10 +5,16 @@
   },
   "testimonials": [
     {
-      "name": "",
+      "name": "Marina ",
       "rating": "5",
-      "text": "",
-      "image": ""
+      "text": "produto muito bom chegou em 4 dias tirou minha vontade de comer doces não colocava muita esperança mas superou minhas expectativas",
+      "image": "https://fl3qgkrpsyztpvgw.public.blob.vercel-storage.com/feedback/1789084058180-1d8zho-feedback.png"
+    },
+    {
+      "name": "Gabriel Henrique",
+      "rating": "5",
+      "text": "perdi 4 kg em 12 dias realmente faz efeito unico colateral que senti foi muita vontade de fazer xixi",
+      "image": "https://fl3qgkrpsyztpvgw.public.blob.vercel-storage.com/feedback/1789085931276-d8n7ja-feedback_5.png"
     }
   ],
   "brand": {
@@ -95,7 +101,7 @@
       "name": "30 cápsulas",
       "tag": "Fracionado · selo original",
       "flag": "30 dias",
-      "price": "120",
+      "price": "129,99",
       "cta": "Entrar em contato",
       "note": "Um ciclo completo de 30 dias para auxiliar o seu emagrecimento."
     },
@@ -103,7 +109,7 @@
       "name": "60 cápsulas",
       "tag": "Lacrado · selo original",
       "flag": "60 dias",
-      "price": "200",
+      "price": "199,99",
       "cta": "Entrar em contato",
       "badge": "mais pedido",
       "note": "Frasco fechado de fábrica, ciclo completo de 2 meses."
