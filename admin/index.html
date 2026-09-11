@@ -233,7 +233,7 @@
       '<div class="card"><strong class="card-title">Publicados no site</strong>' +
         '<div id="publishedList"><p class="hint">Carregando…</p></div>' +
         '<button type="button" class="refresh" id="addTesti" style="margin-top:10px;">+ Adicionar feedback manualmente</button>' +
-        '<div class="hint">Lembre-se de clicar em "Salvar alterações" lá embaixo pra publicar de verdade.</div></div>',
+        '<div class="hint">Cada feedback tem seu próprio botão "Salvar" — não precisa do botão geral lá embaixo pra isso.</div></div>',
 
     marca:
       '<h2>Marca e contato</h2><p class="desc">Nome exibido no site e os números/mensagens do WhatsApp.</p>' +
@@ -413,20 +413,25 @@
     cur[parts[parts.length - 1]] = value;
   }
 
-  function testiCardHtml(idx, t){
+  function testiCardHtml(t){
     t = t || {};
     var img = t.image || '';
-    return '<div class="item-block testi-item">' +
-      '<div class="row"><div><label>Nome</label><input type="text" data-path="testimonials.' + idx + '.name" value="' + escapeHtml(t.name) + '"></div>' +
-      '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" data-path="testimonials.' + idx + '.rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
-      '<label>Feedback</label><textarea data-path="testimonials.' + idx + '.text">' + escapeHtml(t.text) + '</textarea>' +
+    var id = t.id || '';
+    return '<div class="item-block testi-item" data-id="' + escapeHtml(id) + '">' +
+      '<div class="row"><div><label>Nome</label><input type="text" class="ti-name" value="' + escapeHtml(t.name) + '"></div>' +
+      '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" class="ti-rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
+      '<label>Feedback</label><textarea class="ti-text">' + escapeHtml(t.text) + '</textarea>' +
       '<label>Foto</label>' +
       '<div class="testi-photo-row">' +
         (img ? '<img class="testi-thumb" src="' + escapeHtml(img) + '">' : '<span class="hint">Sem foto</span>') +
         '<input type="file" class="testi-upload" accept="image/png,image/jpeg,image/webp,image/gif">' +
       '</div>' +
-      '<input type="hidden" data-path="testimonials.' + idx + '.image" value="' + escapeHtml(img) + '">' +
-      '<button type="button" class="refresh remove-testi" style="margin-top:8px;color:#a32d2d;">Remover</button>' +
+      '<input type="hidden" class="ti-image" value="' + escapeHtml(img) + '">' +
+      '<div class="row" style="margin-top:10px;align-items:center;">' +
+        '<button type="button" class="refresh save-testi" style="color:var(--green);flex:none;">Salvar este feedback</button>' +
+        '<button type="button" class="refresh remove-testi" style="color:var(--red);flex:none;">Remover</button>' +
+        '<span class="ti-msg hint" style="margin:0;"></span>' +
+      '</div>' +
     '</div>';
   }
 
@@ -434,20 +439,58 @@
     var wrap = document.getElementById('publishedList');
     if (!wrap) return;
     if (!list || !list.length){ wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>'; return; }
-    wrap.innerHTML = list.map(function(t, i){ return testiCardHtml(i, t); }).join('');
+    wrap.innerHTML = list.map(testiCardHtml).join('');
   }
 
-  function reindexTestimonials(){
+  function saveTestimonial(item){
+    var token = document.getElementById('token').value;
+    var msgEl = item.querySelector('.ti-msg');
+    if (!token){ msgEl.textContent = 'Digite a senha primeiro.'; msgEl.style.color = 'var(--red)'; return; }
+    var payload = {
+      token: token,
+      id: item.getAttribute('data-id') || undefined,
+      name: item.querySelector('.ti-name').value,
+      rating: item.querySelector('.ti-rating').value,
+      text: item.querySelector('.ti-text').value,
+      image: item.querySelector('.ti-image').value,
+    };
+    msgEl.textContent = 'Salvando…'; msgEl.style.color = 'var(--text-soft)';
+    fetch('../api/testimonial-upsert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+      .then(function(res){
+        if (res.ok){
+          item.setAttribute('data-id', res.body.id);
+          msgEl.textContent = 'Salvo!'; msgEl.style.color = 'var(--green)';
+        } else {
+          msgEl.textContent = 'Erro: ' + (res.body.error || 'falha'); msgEl.style.color = 'var(--red)';
+        }
+      })
+      .catch(function(err){ msgEl.textContent = 'Erro de rede: ' + err; msgEl.style.color = 'var(--red)'; });
+  }
+
+  function removeTestimonial(item){
+    var id = item.getAttribute('data-id');
+    if (!id){ item.remove(); checkPublishedEmpty(); return; }
+    var token = document.getElementById('token').value;
+    if (!token){ item.querySelector('.ti-msg').textContent = 'Digite a senha primeiro.'; return; }
+    fetch('../api/testimonial-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, id: id })
+    }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+      .then(function(res){
+        if (res.ok){ item.remove(); checkPublishedEmpty(); }
+        else alert('Erro ao remover: ' + (res.body.error || 'falha'));
+      })
+      .catch(function(err){ alert('Erro de rede: ' + err); });
+  }
+
+  function checkPublishedEmpty(){
     var wrap = document.getElementById('publishedList');
-    if (!wrap) return;
-    var items = wrap.querySelectorAll('.testi-item');
-    if (!items.length){ wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>'; return; }
-    items.forEach(function(item, i){
-      item.querySelectorAll('[data-path]').forEach(function(elm){
-        var field = elm.getAttribute('data-path').split('.').pop();
-        elm.setAttribute('data-path', 'testimonials.' + i + '.' + field);
-      });
-    });
+    if (wrap && !wrap.querySelector('.testi-item')) wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>';
   }
 
   document.addEventListener('click', function(ev){
@@ -455,12 +498,13 @@
       var wrap = document.getElementById('publishedList');
       var placeholder = wrap.querySelector('.hint');
       if (placeholder) wrap.innerHTML = '';
-      var idx = wrap.querySelectorAll('.testi-item').length;
-      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, {}));
+      wrap.insertAdjacentHTML('beforeend', testiCardHtml({}));
     }
-    if (ev.target && ev.target.classList && ev.target.classList.contains('remove-testi')){
-      ev.target.closest('.testi-item').remove();
-      reindexTestimonials();
+    if (ev.target && ev.target.classList && ev.target.classList.contains('save-testi')){
+      saveTestimonial(ev.target.closest('.testi-item'));
+    }
+    if (ev.target && ev.target.classList && ev.target.classList.contains('remove-testi') && ev.target.closest('.testi-item')){
+      removeTestimonial(ev.target.closest('.testi-item'));
     }
     if (ev.target && ev.target.id === 'refreshPending'){
       loadPending();
@@ -472,7 +516,7 @@
     var file = ev.target.files[0];
     if (!file) return;
     var item = ev.target.closest('.testi-item');
-    var hidden = item.querySelector('input[type=hidden][data-path$=".image"]');
+    var hidden = item.querySelector('.ti-image');
     var row = ev.target.closest('.testi-photo-row');
     var reader = new FileReader();
     reader.onload = function(){
@@ -542,17 +586,27 @@
     if (!card) return;
     var id = card.getAttribute('data-id');
     if (ev.target.classList.contains('approve-testi')){
-      var wrap = document.getElementById('publishedList');
-      var placeholder = wrap.querySelector('.hint');
-      if (placeholder) wrap.innerHTML = '';
-      var idx = wrap.querySelectorAll('.testi-item').length;
+      var token = document.getElementById('token').value;
+      if (!token){ document.getElementById('msg').textContent = 'Digite a senha primeiro.'; document.getElementById('msg').className = 'msg err'; return; }
       var name = card.querySelector('strong').textContent;
       var text = card.querySelector('p').textContent;
       var starsTxt = card.querySelector('span').textContent;
       var rating = (starsTxt.match(/★/g) || []).length || 5;
       var image = card.getAttribute('data-image') || '';
-      wrap.insertAdjacentHTML('beforeend', testiCardHtml(idx, { name: name, rating: rating, text: text, image: image }));
-      removePending(id).then(function(){ card.remove(); });
+      fetch('../api/testimonial-upsert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token, name: name, rating: rating, text: text, image: image })
+      }).then(function(r){ return r.json().then(function(b){ return { ok: r.ok, body: b }; }); })
+        .then(function(res){
+          if (!res.ok){ alert('Erro ao aprovar: ' + (res.body.error || 'falha')); return; }
+          var wrap = document.getElementById('publishedList');
+          var placeholder = wrap.querySelector('.hint');
+          if (placeholder) wrap.innerHTML = '';
+          wrap.insertAdjacentHTML('beforeend', testiCardHtml({ id: res.body.id, name: name, rating: rating, text: text, image: image }));
+          removePending(id).then(function(){ card.remove(); });
+        })
+        .catch(function(err){ alert('Erro de rede: ' + err); });
     } else if (ev.target.classList.contains('reject-testi')){
       removePending(id).then(function(){ card.remove(); });
     }

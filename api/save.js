@@ -48,6 +48,12 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Testimonials live in their own key (testimonials_list) now, managed by dedicated
+  // endpoints, so a general content save can never clobber feedback that arrived after
+  // the admin's page was loaded. Strip it here as a safety net even if the client
+  // still sends a (possibly stale) copy.
+  delete content.testimonials;
+
   const kvUrl = process.env.KV_REST_API_URL;
   const kvToken = process.env.KV_REST_API_TOKEN;
   if (!kvUrl || !kvToken) {
