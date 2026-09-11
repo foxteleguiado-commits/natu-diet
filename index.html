@@ -162,31 +162,25 @@
   
 
   /* ---------- testimonials ---------- */
-  .testi-carousel{ max-width:480px; margin:34px auto 0; }
-  .testi-viewport{ overflow:hidden; border-radius:16px; }
-  .testi-track{ display:flex; transition:transform .35s ease; }
-  .testi-slide{ flex:0 0 100%; min-width:100%; }
+  .testi-marquee{
+    margin-top:34px; overflow:hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .testi-track{ display:flex; gap:16px; width:max-content; }
+  .testi-track:not(.scrolling){ margin:0 auto; }
+  .testi-track.scrolling{ animation-name:testiScroll; animation-timing-function:linear; animation-iteration-count:infinite; }
+  .testi-marquee:hover .testi-track.scrolling{ animation-play-state:paused; }
+  @keyframes testiScroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
   .testi-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:16px; padding:16px 18px;
-    display:flex; gap:14px; align-items:flex-start;
+    display:flex; gap:14px; align-items:flex-start; flex:0 0 300px; width:300px;
   }
   .testi-card .photo{ width:56px; height:56px; border-radius:10px; object-fit:cover; flex:none; }
   .testi-card .body{ flex:1; min-width:0; }
   .testi-card .who{ font-weight:800; font-size:12.5px; color:var(--ink-soft); }
   .testi-card .stars{ margin-top:4px; color:var(--brand-blue); font-size:13px; letter-spacing:1.5px; }
   .testi-card .txt{ margin-top:6px; font-size:13.5px; line-height:1.5; color:var(--ink); }
-  .testi-nav{ display:flex; align-items:center; justify-content:center; gap:14px; margin-top:14px; }
-  .testi-arrow{
-    width:32px; height:32px; border-radius:50%; border:1px solid var(--line-strong); background:var(--paper-raised);
-    cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--ink); font-size:15px; padding:0;
-  }
-  .testi-arrow:hover{ border-color:var(--brand-blue); color:var(--brand-blue); }
-  .testi-dots{ display:flex; gap:5px; align-items:center; width:140px; }
-  .testi-dot{
-    position:relative; flex:1; height:4px; min-width:10px; border-radius:2px; background:var(--line-strong);
-    cursor:pointer; padding:0; border:none; overflow:hidden;
-  }
-  .testi-dot .fill{ position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brand-blue); border-radius:inherit; }
   .testi-empty{ max-width:480px; margin:34px auto 0; padding:28px; text-align:center; border:1px dashed var(--line-strong); border-radius:16px; color:var(--ink-soft); font-size:14px; }
 
   .testi-form-wrap{ margin-top:48px; padding-top:40px; border-top:1px solid var(--line); max-width:560px; }
@@ -407,13 +401,8 @@
     <p class="sec-sub" data-ck="testimonialsSection.sub">Feedback de quem já usa o Natu Diet na rotina.</p>
 
     <div class="testi-empty" id="testiEmpty">Ainda não temos feedback publicado ainda.</div>
-    <div class="testi-carousel" id="testiCarousel" style="display:none;">
-      <div class="testi-viewport"><div class="testi-track" id="testiTrack"></div></div>
-      <div class="testi-nav" id="testiNav">
-        <button type="button" class="testi-arrow" id="testiPrev" aria-label="Anterior">‹</button>
-        <div class="testi-dots" id="testiDots"></div>
-        <button type="button" class="testi-arrow" id="testiNext" aria-label="Próximo">›</button>
-      </div>
+    <div class="testi-marquee" id="testiCarousel" style="display:none;">
+      <div class="testi-track" id="testiTrack"></div>
     </div>
 
     <div class="testi-form-wrap">
@@ -548,67 +537,28 @@
     });
     if(validTestimonials.length){
       var track = document.getElementById('testiTrack');
-      var dotsWrap = document.getElementById('testiDots');
       var carousel = document.getElementById('testiCarousel');
       var emptyEl = document.getElementById('testiEmpty');
-      var navEl = document.getElementById('testiNav');
       var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
 
-      track.innerHTML = validTestimonials.map(function(t){
+      var cardsHtml = validTestimonials.map(function(t){
         var n = Math.max(1, Math.min(5, parseInt(t.rating,10) || 5));
         var stars = '★★★★★☆☆☆☆'.slice(5 - n, 10 - n);
         var photo = t.image ? '<img class="photo" src="' + esc(t.image) + '" alt="Foto enviada por ' + esc(t.name) + '" loading="lazy">' : '';
-        return '<div class="testi-slide"><div class="testi-card">' + photo +
+        return '<div class="testi-card">' + photo +
           '<div class="body"><div class="who">' + esc(t.name) + '</div><div class="stars">' + stars + '</div><div class="txt">' + esc(t.text) + '</div></div>' +
-          '</div></div>';
+          '</div>';
       }).join('');
 
       var count = validTestimonials.length;
-      dotsWrap.innerHTML = '';
-      for(var i = 0; i < count; i++){
-        (function(idx){
-          var dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'testi-dot' + (idx === 0 ? ' active' : '');
-          dot.setAttribute('aria-label', 'Ir para depoimento ' + (idx + 1));
-          dot.innerHTML = '<span class="fill"></span>';
-          dot.addEventListener('click', function(){ goTo(idx); });
-          dotsWrap.appendChild(dot);
-        })(i);
-      }
-      navEl.style.display = count > 1 ? 'flex' : 'none';
-
-      var current = 0, timer;
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var SLIDE_MS = 5000;
-      function render(){
-        track.style.transform = 'translateX(-' + (current * 100) + '%)';
-        Array.prototype.forEach.call(dotsWrap.children, function(d, idx){
-          d.classList.toggle('active', idx === current);
-          var fill = d.querySelector('.fill');
-          fill.style.transition = 'none';
-          if (idx < current){ fill.style.width = '100%'; }
-          else if (idx > current){ fill.style.width = '0%'; }
-          else {
-            fill.style.width = '0%';
-            void fill.offsetWidth; // force reflow so the transition below restarts
-            if (count > 1 && !reduceMotion){
-              fill.style.transition = 'width ' + SLIDE_MS + 'ms linear';
-              fill.style.width = '100%';
-            }
-          }
-        });
-      }
-      function goTo(idx){ current = (idx + count) % count; render(); resetTimer(); }
-      function nextSlide(){ goTo(current + 1); }
-      function prevSlide(){ goTo(current - 1); }
-      function resetTimer(){ if(timer) clearInterval(timer); if(count > 1 && !reduceMotion) timer = setInterval(nextSlide, SLIDE_MS); }
+      var canScroll = count > 1 && !reduceMotion;
 
-      document.getElementById('testiPrev').addEventListener('click', prevSlide);
-      document.getElementById('testiNext').addEventListener('click', nextSlide);
-
-      render();
-      resetTimer();
+      // Duplicate the strip once so a continuous translateX(-50%) loop is seamless —
+      // like an old film reel running past, one card after another, no start or end.
+      track.innerHTML = canScroll ? (cardsHtml + cardsHtml) : cardsHtml;
+      track.classList.toggle('scrolling', canScroll);
+      if (canScroll) track.style.animationDuration = (count * 7) + 's';
 
       emptyEl.style.display = 'none';
       carousel.style.display = 'block';
