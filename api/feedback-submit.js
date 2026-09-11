@@ -2,10 +2,12 @@ function clip(s, max) {
   return String(s == null ? '' : s).trim().slice(0, max);
 }
 
-// Appends straight to the site's live testimonials list (its own Redis key, separate
-// from the general site content) so it's visible immediately — no deploy needed, and
-// no risk of a stale admin-panel save later clobbering it. Returns true on success,
-// false on any failure (caller falls back to the pending queue).
+// Writes straight into the testimonial's own hash field (its own Redis key, separate
+// from the general site content) so it's visible immediately — no deploy needed. Each
+// entry lives under its own id, so this never has to read the whole list first: it
+// can't race with another approval/edit/auto-publish landing on a different entry at
+// the same time. Returns true on success, false on any failure (caller falls back to
+// the pending queue).
 async function tryAutoPublish(entry) {
   const kvUrl = process.env.KV_REST_API_URL;
   const kvToken = process.env.KV_REST_API_TOKEN;
@@ -13,16 +15,11 @@ async function tryAutoPublish(entry) {
   const headers = { Authorization: `Bearer ${kvToken}` };
 
   try {
-    const getResp = await fetch(`${kvUrl}/get/testimonials_list`, { headers });
-    const getJson = await getResp.json();
-    const list = (getJson && getJson.result) ? JSON.parse(getJson.result) : (require('../content.json').testimonials || []);
-
-    list.push({ id: entry.id, name: entry.name, rating: entry.rating, text: entry.text, image: entry.image || '' });
-
-    const setResp = await fetch(`${kvUrl}/set/testimonials_list`, {
+    const value = { id: entry.id, name: entry.name, rating: entry.rating, text: entry.text, image: entry.image || '' };
+    const setResp = await fetch(`${kvUrl}/hset/testimonials/${encodeURIComponent(entry.id)}`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(list),
+      body: JSON.stringify(value),
     });
     return setResp.ok;
   } catch (err) {

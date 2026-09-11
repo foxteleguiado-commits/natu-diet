@@ -24,17 +24,10 @@ module.exports = async (req, res) => {
   const headers = { Authorization: `Bearer ${kvToken}` };
 
   try {
-    const getResp = await fetch(`${kvUrl}/get/testimonials_list`, { headers });
-    const getJson = await getResp.json();
-    let list = (getJson && getJson.result) ? JSON.parse(getJson.result) : [];
-    list = list.filter((t) => t.id !== id);
-
-    const setResp = await fetch(`${kvUrl}/set/testimonials_list`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(list),
-    });
-    if (!setResp.ok) {
+    // Removes only this entry's own hash field — never reads or rewrites the rest
+    // of the list, so it can't race with another approval/edit landing at once.
+    const delResp = await fetch(`${kvUrl}/hdel/testimonials/${encodeURIComponent(id)}`, { headers });
+    if (!delResp.ok) {
       res.status(502).json({ error: 'Falha ao remover' });
       return;
     }

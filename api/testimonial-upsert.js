@@ -20,10 +20,6 @@ module.exports = async (req, res) => {
   const headers = { Authorization: `Bearer ${kvToken}` };
 
   try {
-    const getResp = await fetch(`${kvUrl}/get/testimonials_list`, { headers });
-    const getJson = await getResp.json();
-    let list = (getJson && getJson.result) ? JSON.parse(getJson.result) : [];
-
     const entry = {
       id: id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)),
       name: String(name || '').slice(0, 80),
@@ -32,14 +28,13 @@ module.exports = async (req, res) => {
       image: String(image || '').slice(0, 300),
     };
 
-    const idx = id ? list.findIndex((t) => t.id === id) : -1;
-    if (idx >= 0) list[idx] = entry;
-    else list.push(entry);
-
-    const setResp = await fetch(`${kvUrl}/set/testimonials_list`, {
+    // Writes only this entry's own hash field — editing or approving one testimonial
+    // never touches, reads, or can lose any other entry, even if several are saved
+    // at the same instant.
+    const setResp = await fetch(`${kvUrl}/hset/testimonials/${encodeURIComponent(entry.id)}`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(list),
+      body: JSON.stringify(entry),
     });
     if (!setResp.ok) {
       res.status(502).json({ error: 'Falha ao salvar' });
