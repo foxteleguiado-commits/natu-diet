@@ -124,12 +124,27 @@
     background:var(--bg-elev);
   }
   .pending-item:first-child{ margin-top:0; }
-  .testi-item{
-    border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-top:10px; background:var(--bg-elev);
+  .testi-bar{
+    display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;
+    border:1px solid var(--border); border-radius:12px; padding:12px 16px; margin-top:10px; background:var(--bg-elev);
   }
-  .testi-item:first-child{ margin-top:0; }
-  .testi-photo-row{ display:flex; align-items:center; gap:12px; }
-  .testi-thumb{ width:64px; height:64px; object-fit:cover; border-radius:9px; border:1px solid var(--border-strong); }
+  .testi-bar:first-child{ margin-top:0; }
+  .testi-bar-photo{ position:relative; flex:none; width:52px; }
+  .testi-bar-photo .testi-thumb{ width:52px; height:52px; object-fit:cover; border-radius:10px; border:1px solid var(--border-strong); display:block; }
+  .testi-bar-photo .testi-noimg{
+    width:52px; height:52px; border-radius:10px; border:1px dashed var(--border-strong); display:flex; align-items:center;
+    justify-content:center; font-size:9.5px; line-height:1.15; text-align:center; color:var(--text-dim); padding:2px;
+  }
+  .testi-bar-photo input.testi-upload{ position:absolute; inset:0; width:52px; height:52px; opacity:0; cursor:pointer; }
+  .testi-bar-field{ display:flex; flex-direction:column; }
+  .testi-bar-field label{ margin:0 0 4px; }
+  .testi-bar-field.name{ flex:1 1 130px; min-width:110px; }
+  .testi-bar-field.rating{ flex:none; width:64px; }
+  .testi-bar-field.text{ flex:2 1 260px; min-width:200px; }
+  .testi-bar-field.text textarea{ min-height:38px; height:38px; resize:vertical; }
+  .testi-bar-actions{ display:flex; align-items:center; gap:8px; flex:none; margin-left:auto; align-self:center; }
+  .testi-bar-actions .refresh{ margin-bottom:0; padding:8px 14px; font-size:12.5px; }
+  .testi-bar-actions .ti-msg{ margin:0; white-space:nowrap; }
 
   button.approve-testi{ color:var(--green) !important; border-color:rgba(37,211,102,.35) !important; }
   button.reject-testi, button.remove-testi{ color:var(--red) !important; border-color:rgba(239,122,112,.3) !important; }
@@ -417,20 +432,19 @@
     t = t || {};
     var img = t.image || '';
     var id = t.id || '';
-    return '<div class="item-block testi-item" data-id="' + escapeHtml(id) + '">' +
-      '<div class="row"><div><label>Nome</label><input type="text" class="ti-name" value="' + escapeHtml(t.name) + '"></div>' +
-      '<div style="max-width:110px;"><label>Nota (1-5)</label><input type="text" class="ti-rating" value="' + escapeHtml(t.rating || 5) + '"></div></div>' +
-      '<label>Feedback</label><textarea class="ti-text">' + escapeHtml(t.text) + '</textarea>' +
-      '<label>Foto</label>' +
-      '<div class="testi-photo-row">' +
-        (img ? '<img class="testi-thumb" src="' + escapeHtml(img) + '">' : '<span class="hint">Sem foto</span>') +
-        '<input type="file" class="testi-upload" accept="image/png,image/jpeg,image/webp,image/gif">' +
+    return '<div class="item-block testi-bar" data-id="' + escapeHtml(id) + '">' +
+      '<div class="testi-bar-photo">' +
+        (img ? '<img class="testi-thumb" src="' + escapeHtml(img) + '">' : '<span class="testi-noimg">Sem foto</span>') +
+        '<input type="file" class="testi-upload" accept="image/png,image/jpeg,image/webp,image/gif" title="Trocar foto">' +
       '</div>' +
+      '<div class="testi-bar-field name"><label>Nome</label><input type="text" class="ti-name" value="' + escapeHtml(t.name) + '"></div>' +
+      '<div class="testi-bar-field rating"><label>Nota</label><input type="text" class="ti-rating" value="' + escapeHtml(t.rating || 5) + '"></div>' +
+      '<div class="testi-bar-field text"><label>Feedback</label><textarea class="ti-text">' + escapeHtml(t.text) + '</textarea></div>' +
       '<input type="hidden" class="ti-image" value="' + escapeHtml(img) + '">' +
-      '<div class="row" style="margin-top:10px;align-items:center;">' +
-        '<button type="button" class="refresh save-testi" style="color:var(--green);flex:none;">Salvar este feedback</button>' +
-        '<button type="button" class="refresh remove-testi" style="color:var(--red);flex:none;">Remover</button>' +
-        '<span class="ti-msg hint" style="margin:0;"></span>' +
+      '<div class="testi-bar-actions">' +
+        '<button type="button" class="refresh save-testi" style="color:var(--green);">Salvar</button>' +
+        '<button type="button" class="refresh remove-testi" style="color:var(--red);">Remover</button>' +
+        '<span class="ti-msg hint"></span>' +
       '</div>' +
     '</div>';
   }
@@ -490,7 +504,7 @@
 
   function checkPublishedEmpty(){
     var wrap = document.getElementById('publishedList');
-    if (wrap && !wrap.querySelector('.testi-item')) wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>';
+    if (wrap && !wrap.querySelector('.testi-bar')) wrap.innerHTML = '<p class="hint">Nenhum feedback publicado ainda.</p>';
   }
 
   document.addEventListener('click', function(ev){
@@ -501,10 +515,10 @@
       wrap.insertAdjacentHTML('beforeend', testiCardHtml({}));
     }
     if (ev.target && ev.target.classList && ev.target.classList.contains('save-testi')){
-      saveTestimonial(ev.target.closest('.testi-item'));
+      saveTestimonial(ev.target.closest('.testi-bar'));
     }
-    if (ev.target && ev.target.classList && ev.target.classList.contains('remove-testi') && ev.target.closest('.testi-item')){
-      removeTestimonial(ev.target.closest('.testi-item'));
+    if (ev.target && ev.target.classList && ev.target.classList.contains('remove-testi') && ev.target.closest('.testi-bar')){
+      removeTestimonial(ev.target.closest('.testi-bar'));
     }
     if (ev.target && ev.target.id === 'refreshPending'){
       loadPending();
@@ -515,9 +529,9 @@
     if (!ev.target.classList || !ev.target.classList.contains('testi-upload')) return;
     var file = ev.target.files[0];
     if (!file) return;
-    var item = ev.target.closest('.testi-item');
+    var item = ev.target.closest('.testi-bar');
     var hidden = item.querySelector('.ti-image');
-    var row = ev.target.closest('.testi-photo-row');
+    var photoBox = ev.target.closest('.testi-bar-photo');
     var reader = new FileReader();
     reader.onload = function(){
       fetch('../api/upload', {
@@ -528,11 +542,11 @@
         .then(function(res){
           if (res.ok){
             hidden.value = res.body.url;
-            var hint = row.querySelector('.hint');
-            if (hint) hint.remove();
-            var thumb = row.querySelector('img.testi-thumb');
+            var placeholder = photoBox.querySelector('.testi-noimg');
+            if (placeholder) placeholder.remove();
+            var thumb = photoBox.querySelector('img.testi-thumb');
             if (thumb) thumb.src = res.body.url;
-            else row.insertAdjacentHTML('afterbegin', '<img class="testi-thumb" src="' + res.body.url + '">');
+            else photoBox.insertAdjacentHTML('afterbegin', '<img class="testi-thumb" src="' + res.body.url + '">');
           } else {
             alert('Erro ao enviar imagem: ' + (res.body.error || 'falha'));
           }
