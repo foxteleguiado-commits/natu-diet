@@ -181,9 +181,12 @@
     cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--ink); font-size:15px; padding:0;
   }
   .testi-arrow:hover{ border-color:var(--brand-blue); color:var(--brand-blue); }
-  .testi-dots{ display:flex; gap:6px; align-items:center; }
-  .testi-dot{ width:6px; height:6px; border-radius:50%; background:var(--line-strong); cursor:pointer; padding:0; border:none; transition:width .2s ease,background .2s ease; }
-  .testi-dot.active{ background:var(--brand-blue); width:16px; border-radius:4px; }
+  .testi-dots{ display:flex; gap:5px; align-items:center; width:140px; }
+  .testi-dot{
+    position:relative; flex:1; height:4px; min-width:10px; border-radius:2px; background:var(--line-strong);
+    cursor:pointer; padding:0; border:none; overflow:hidden;
+  }
+  .testi-dot .fill{ position:absolute; left:0; top:0; bottom:0; width:0%; background:var(--brand-blue); border-radius:inherit; }
   .testi-empty{ max-width:480px; margin:34px auto 0; padding:28px; text-align:center; border:1px dashed var(--line-strong); border-radius:16px; color:var(--ink-soft); font-size:14px; }
 
   .testi-form-wrap{ margin-top:48px; padding-top:40px; border-top:1px solid var(--line); max-width:560px; }
@@ -568,6 +571,7 @@
           dot.type = 'button';
           dot.className = 'testi-dot' + (idx === 0 ? ' active' : '');
           dot.setAttribute('aria-label', 'Ir para depoimento ' + (idx + 1));
+          dot.innerHTML = '<span class="fill"></span>';
           dot.addEventListener('click', function(){ goTo(idx); });
           dotsWrap.appendChild(dot);
         })(i);
@@ -575,15 +579,30 @@
       navEl.style.display = count > 1 ? 'flex' : 'none';
 
       var current = 0, timer;
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var SLIDE_MS = 5000;
       function render(){
         track.style.transform = 'translateX(-' + (current * 100) + '%)';
-        Array.prototype.forEach.call(dotsWrap.children, function(d, idx){ d.classList.toggle('active', idx === current); });
+        Array.prototype.forEach.call(dotsWrap.children, function(d, idx){
+          d.classList.toggle('active', idx === current);
+          var fill = d.querySelector('.fill');
+          fill.style.transition = 'none';
+          if (idx < current){ fill.style.width = '100%'; }
+          else if (idx > current){ fill.style.width = '0%'; }
+          else {
+            fill.style.width = '0%';
+            void fill.offsetWidth; // force reflow so the transition below restarts
+            if (count > 1 && !reduceMotion){
+              fill.style.transition = 'width ' + SLIDE_MS + 'ms linear';
+              fill.style.width = '100%';
+            }
+          }
+        });
       }
       function goTo(idx){ current = (idx + count) % count; render(); resetTimer(); }
       function nextSlide(){ goTo(current + 1); }
       function prevSlide(){ goTo(current - 1); }
-      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      function resetTimer(){ if(timer) clearInterval(timer); if(count > 1 && !reduceMotion) timer = setInterval(nextSlide, 5000); }
+      function resetTimer(){ if(timer) clearInterval(timer); if(count > 1 && !reduceMotion) timer = setInterval(nextSlide, SLIDE_MS); }
 
       document.getElementById('testiPrev').addEventListener('click', prevSlide);
       document.getElementById('testiNext').addEventListener('click', nextSlide);
